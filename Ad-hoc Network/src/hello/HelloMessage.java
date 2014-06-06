@@ -15,9 +15,9 @@ public class HelloMessage
 	private LinkedList<InetAddress> symmetricNeighbors;
 	private int numberOfSymmetric;
 
-	HelloMessage()
+	HelloMessage(InetAddress myAddress)
 	{
-		sourceAddress = null;
+		sourceAddress = myAddress;
 		numberOfHeard = 0;
 		heardNeighbors = new LinkedList<InetAddress>();
 		numberOfSymmetric = 0;
@@ -89,17 +89,13 @@ public class HelloMessage
 		buffer.put((byte) 0);
 		buffer.putShort(bufferSize);
 		buffer.put(sourceAddress.getAddress());
-		byte[] byteAddress = new byte[4];
 		buffer.put((byte) numberOfHeard);
 		for (InetAddress address : heardNeighbors) {
 			buffer.put(address.getAddress());
 		}
 		buffer.put((byte) numberOfSymmetric);
 		for (InetAddress address : symmetricNeighbors) {
-			byteAddress = address.getAddress();
-			for (int j = 0; j<4; j++) {
-				buffer.put(byteAddress[j]);
-			}
+			buffer.put(address.getAddress());
 		}
 		return buffer;
 	}
@@ -109,7 +105,7 @@ public class HelloMessage
 		numberOfHeard++;
 		heardNeighbors.add(address);
 	}
-	
+
 	public void addSymmetric(InetAddress address)
 	{
 		numberOfSymmetric++;

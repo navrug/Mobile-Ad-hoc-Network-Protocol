@@ -9,7 +9,7 @@ public class HelloThread implements Runnable
 	InetAddress neighbor;
 	ByteBuffer message;
 	
-	HelloThread(
+	public HelloThread(
 			HelloTable table,
 			InetAddress neighbor,
 			ByteBuffer message)
