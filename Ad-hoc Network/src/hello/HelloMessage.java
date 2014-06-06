@@ -2,6 +2,10 @@ package hello;
 
 public class HelloMessage
 {
-	private NeighbourList neighbours;
-
+	private HelloTable neighbours;
+	
+	HelloMessage(StringBuffer message)
+	{
+		
+	}
 }
