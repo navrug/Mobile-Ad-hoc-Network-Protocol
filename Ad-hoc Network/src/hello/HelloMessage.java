@@ -9,6 +9,7 @@ import exceptions.WrongMessageType;
 
 public class HelloMessage
 {
+	private InetAddress sourceAddress;
 	private LinkedList<InetAddress> heardNeighbors;
 	private int numberOfHeard;
 	private LinkedList<InetAddress> symmetricNeighbors;
@@ -16,6 +17,7 @@ public class HelloMessage
 
 	HelloMessage()
 	{
+		sourceAddress = null;
 		numberOfHeard = 0;
 		heardNeighbors = new LinkedList<InetAddress>();
 		numberOfSymmetric = 0;
@@ -30,6 +32,16 @@ public class HelloMessage
 			message.get();
 			message.get();
 			message.get();
+			//Getting source address
+			for (int j = 0; j<4; j++) {
+				byteAddress[j] = message.get();
+			}
+			try {
+				sourceAddress =
+						InetAddress.getByAddress(byteAddress);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
 			//Heard neighbors listing
 			numberOfHeard = message.getShort();
 			message.get();
@@ -71,18 +83,16 @@ public class HelloMessage
 	public ByteBuffer toBuffer() 
 	{
 		short bufferSize = (short)
-				(4*(3 + numberOfHeard + numberOfSymmetric));
+				(4*(4 + numberOfHeard + numberOfSymmetric));
 		ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 		buffer.putChar('h');
 		buffer.put((byte) 0);
 		buffer.putShort(bufferSize);
+		buffer.put(sourceAddress.getAddress());
 		byte[] byteAddress = new byte[4];
 		buffer.put((byte) numberOfHeard);
 		for (InetAddress address : heardNeighbors) {
-			byteAddress = address.getAddress();
-			for (int j = 0; j<4; j++) {
-				buffer.put(byteAddress[j]);
-			}
+			buffer.put(address.getAddress());
 		}
 		buffer.put((byte) numberOfSymmetric);
 		for (InetAddress address : symmetricNeighbors) {

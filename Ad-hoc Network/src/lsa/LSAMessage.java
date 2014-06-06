@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+import exceptions.WrongMessageType;
+
 
 public class LSAMessage
 {
@@ -16,7 +18,8 @@ public class LSAMessage
 	{
 		char type = message.getChar();
 		
-		if (type != 'l') 
+		if (type != 'l')
+			throw new WrongMessageType();
 		
 		message.getChar();
 		short messageSize = message.getShort();
@@ -39,7 +42,21 @@ public class LSAMessage
 	}
 	
 	ByteBuffer toBuffer() {
-		ByteBuffer buffer = ByteBuffer.allocate(1000);
+		
+		
+		short messageSize = (short) (numberofNeighbours*4 + 8);
+		ByteBuffer buffer = ByteBuffer.allocate(messageSize);
+		buffer.putChar('l');
+		buffer.putShort(messageSize);
+		buffer.putShort(sequenceNumber);
+		buffer.putShort(numberofNeighbours);
+		
+		for (InetAddress adresse : neighboursAdresses) {
+			buffer.put(adresse.getAddress());
+		}
+		
+		return buffer;
+		
 	}
 	
 }

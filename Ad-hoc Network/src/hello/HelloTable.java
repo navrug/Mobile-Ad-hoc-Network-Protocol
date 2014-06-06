@@ -12,8 +12,14 @@ public class HelloTable
 	{
 		table = new Hashtable<InetAddress, HelloMessage>();
 	}
-
-	HelloMessage createHello()
+	
+	
+	public void addHello(InetAddress neighbor, HelloMessage message)
+	{
+		table.put(neighbor, message);
+	}
+	
+	public HelloMessage createHello()
 	{
 		HelloMessage result = new HelloMessage();
 		InetAddress myAddress = null;
