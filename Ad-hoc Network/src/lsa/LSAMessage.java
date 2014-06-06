@@ -18,13 +18,10 @@ public class LSAMessage
 	LSAMessage(ByteBuffer message)
 	{
 		char type = message.getChar();
-		
 		if (type != 'l')
 			throw new WrongMessageType();
-		
 		message.getChar();
 		message.get();
-		short messageSize = message.getShort();
 		byte[] byteAddress = new byte[4];
 		//Getting source address
 		for (int j = 0; j<4; j++) {
