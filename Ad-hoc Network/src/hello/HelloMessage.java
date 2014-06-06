@@ -5,10 +5,14 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+import exceptions.WrongMessageType;
+
 public class HelloMessage
 {
 	private LinkedList<InetAddress> heardNeighbours;
+	private int numberOfHeard;
 	private LinkedList<InetAddress> symmetricNeighbours;
+	private int numberOfSymmetric;
 	
 	HelloMessage(ByteBuffer message)
 	{
@@ -18,7 +22,7 @@ public class HelloMessage
 			message.get();
 			message.get();
 			//Heard neighbours listing
-			int numberOfHeard = message.getShort();
+			numberOfHeard = message.getShort();
 			message.get();
 			message.get();
 			message.get();
@@ -35,7 +39,7 @@ public class HelloMessage
 				}
 			}
 			//Symmetric neighbours listing
-			int numberOfSymmetric = message.getShort();
+			numberOfSymmetric = message.getShort();
 			message.get();
 			message.get();
 			message.get();
@@ -52,19 +56,33 @@ public class HelloMessage
 				}
 			}
 		}
+		else throw new WrongMessageType();
 	}
 
 	public ByteBuffer toBuffer() 
 	{
-		int bufferSize = 32*(3 
-				+ heardNeighbours.size()
-				+ symmetricNeighbours.size());
+		short bufferSize = (short)
+				(4*(3 + numberOfHeard + numberOfSymmetric));
 		ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 		buffer.putChar('h');
 		buffer.put((byte) 0);
-		buffer.putShort(value)
-
-		
+		buffer.putShort(bufferSize);
+		byte[] byteAddress = new byte[4];
+		buffer.put((byte) numberOfHeard);
+		for (InetAddress address : heardNeighbours) {
+			byteAddress = address.getAddress();
+			for (int j = 0; j<4; j++) {
+				buffer.put(byteAddress[j]);
+			}
+		}
+		buffer.put((byte) numberOfSymmetric);
+		for (InetAddress address : symmetricNeighbours) {
+			byteAddress = address.getAddress();
+			for (int j = 0; j<4; j++) {
+				buffer.put(byteAddress[j]);
+			}
+		}
+		return buffer;
 	}
 
 }
