@@ -1,5 +1,6 @@
 package hello;
 
-public class HelloTable {
-
+public class HelloTable
+{
+	private HashTable<String, >
 }
