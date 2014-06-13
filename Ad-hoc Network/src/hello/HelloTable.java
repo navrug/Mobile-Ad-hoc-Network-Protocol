@@ -11,7 +11,7 @@ public class HelloTable
 	private Hashtable<InetAddress, HelloMessage> table;
 	private static short sequenceNumberCounter = 0;
 
-	HelloTable()
+	public HelloTable()
 	{
 		table = new Hashtable<InetAddress, HelloMessage>();
 	}

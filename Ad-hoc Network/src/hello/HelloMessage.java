@@ -25,7 +25,7 @@ public class HelloMessage
 	}
 
 
-	HelloMessage(ByteBuffer message)
+	public HelloMessage(ByteBuffer message)
 	{
 		byte[] byteAddress = new byte[4];
 		if (message.getChar() == 'h') {

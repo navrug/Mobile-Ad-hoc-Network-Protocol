@@ -15,7 +15,7 @@ public class LSAMessage
 	private short sequenceNumber;
 	private short numberOfNeighbors;
 	
-	LSAMessage(ByteBuffer message)
+	public LSAMessage(ByteBuffer message)
 	{
 		char type = message.getChar();
 		if (type != 'l')
@@ -56,7 +56,7 @@ public class LSAMessage
 		this.sequenceNumber = sequenceNumber;
 	}
 	
-	ByteBuffer toBuffer()
+	public ByteBuffer toBuffer()
 	{
 		short messageSize = (short) (numberOfNeighbors*4 + 12);
 		ByteBuffer buffer = ByteBuffer.allocate(messageSize);

@@ -1,28 +1,52 @@
 package listener;
 
+import hello.HelloMessage;
 import hello.HelloTable;
-import hello.HelloThread;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
 
+import lsa.LSAMessage;
 import lsa.LSATable;
-import lsa.LSAThread;
 
 public class MessageThread implements Runnable
 {
 	HelloTable helloTable;
 	LSATable lsaTable;
-	ByteBuffer message;
+	BlockingQueue<ByteBuffer> queue;
 
-	MessageThread(ByteBuffer message)
+	MessageThread(HelloTable helloTable,
+			LSATable lsaTable,
+			BlockingQueue<ByteBuffer> queue)
 	{
-		this.message = message;
+		this.helloTable = helloTable;
+		this.lsaTable = lsaTable;
+		this.queue = queue;
+	}
+	
+	/*
+	 * Takes a ByteBuffer in consult mode, return a buffer in
+	 * consult mode
+	 */
+	private static ByteBuffer adaptBuffer(ByteBuffer original)
+	{
+		ByteBuffer clone = ByteBuffer.allocate(original.limit());
+		for (int pos = 0; pos < original.limit(); pos++)
+			clone.put(original.get());
+		clone.flip();
+		return clone;
 	}
 
 	public void run()
 	{
+		ByteBuffer message = null;
+		try {
+			message = queue.take();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		char type = message.getChar();
 		message.get();
 		message.get();
@@ -41,9 +65,13 @@ public class MessageThread implements Runnable
 		}
 		switch (type) {
 		case 'h':
-			new HelloThread(helloTable, sourceAddress, message);
+			helloTable.addHello(sourceAddress,
+					new HelloMessage(adaptBuffer(message)));
+			break;
 		case 'l':
-			new LSAThread(lsaTable, sourceAddress, message);
+			lsaTable.addLSA(sourceAddress, 
+					new LSAMessage(adaptBuffer(message)));
+			break;
 		}
 	}
 
