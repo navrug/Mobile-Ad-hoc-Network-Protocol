@@ -16,14 +16,17 @@ import hello.HelloTable;
 public class Sender implements Runnable
 {
 	HelloTable table;
+	private DatagramChannel channel;
 	private static int helloPeriod = 2000;
 	private static int deviationRange = 100;
 	
 	
 
-	public Sender(HelloTable table)
+	public Sender(HelloTable table,
+			DatagramChannel channel)
 	{
 		this.table = table;
+		this.channel = channel;
 	}
 
 
@@ -32,9 +35,9 @@ public class Sender implements Runnable
 		HelloMessage hello;
 		LSAMessage lsa;
 		ByteBuffer buffer;
-		try (DatagramChannel client = DatagramChannel.open()) {
-			InetSocketAddress local = new InetSocketAddress(1234); 
-			client.bind(local); 
+		try /*(DatagramChannel client = DatagramChannel.open())*/ {
+			/*InetSocketAddress local = new InetSocketAddress(1234); 
+			client.bind(local); */
 			InetSocketAddress broadcast =
 					new InetSocketAddress("255.255.255.255", 1234); 
 			/*
@@ -43,24 +46,24 @@ public class Sender implements Runnable
 			 * H - full period - H - half period - LSA - half period - 
 			 * that is one hell per period and one LSA every two periods
 			 */
-			while (true) {
+			while (channel.isOpen()) {
 				System.out.println("New iteration of sender");
 				hello = table.createHello();
 				buffer = hello.toBuffer();
 				buffer.flip(); // now in consult mode
-				client.send(buffer,broadcast);
+				channel.send(buffer,broadcast);
 				buffer.flip(); // now in fill mode
 				Thread.sleep(helloPeriod + r.nextInt(2*deviationRange)-deviationRange);
 				hello = table.createHello();
 				buffer = hello.toBuffer();
 				buffer.flip(); // consult mode
-				client.send(buffer,broadcast);
+				channel.send(buffer,broadcast);
 				buffer.flip(); // fill mode
 				Thread.sleep(helloPeriod/2 + r.nextInt(2*deviationRange)-deviationRange);
 				lsa = table.createLSA();
 				buffer = lsa.toBuffer();
 				buffer.flip(); // consult mode
-				client.send(buffer,broadcast);
+				channel.send(buffer,broadcast);
 				buffer.flip(); // fill mode
 				Thread.sleep(helloPeriod/2 + r.nextInt(2*deviationRange)-deviationRange);
 			}

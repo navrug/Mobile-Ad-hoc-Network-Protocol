@@ -19,13 +19,17 @@ public class Listener implements Runnable
 {
 	private HelloTable helloTable;
 	private LSATable lsaTable;
-	
-	Listener(HelloTable helloTable, LSATable lsaTable)
+	private DatagramChannel channel;
+
+	public Listener(HelloTable helloTable,
+			LSATable lsaTable,
+			DatagramChannel channel)
 	{
 		this.helloTable = helloTable;
 		this.lsaTable = lsaTable;
+		this.channel = channel;
 	}
-	
+
 	/*
 	 * Takes a buffer in consult mode and returns a buffer
 	 * in consult mode
@@ -33,11 +37,11 @@ public class Listener implements Runnable
 	private static ByteBuffer adaptBuffer(ByteBuffer original)
 	{
 		ByteBuffer clone = ByteBuffer.allocate(original.limit());
-			for (int pos = 0; pos<original.limit(); pos++) {
-				clone.put(original.get());
-			}
-			clone.flip();
-	       return clone;
+		for (int pos = 0; pos<original.limit(); pos++) {
+			clone.put(original.get());
+		}
+		clone.flip();
+		return clone;
 	}
 
 	public void run() {
@@ -46,13 +50,19 @@ public class Listener implements Runnable
 		new Thread(
 				new MessageThread(helloTable,
 						lsaTable,
-						queue)).start();
-		try (DatagramChannel serverSocket = DatagramChannel.open()) 
+						queue),
+				"MessageThread").start();
+		try /*(DatagramChannel serverSocket = DatagramChannel.open())*/ 
 		{ 
-			InetSocketAddress local = new InetSocketAddress(1234);
-			serverSocket.bind(local);
+			/*InetSocketAddress local = new InetSocketAddress(1234);
+			serverSocket.bind(local);*/
 			while (true) { 
-				serverSocket.read(buffer);
+				while (!channel.isOpen()) {
+					System.out.println("Listener : channel not opened.");
+					Thread.sleep(100);
+				}
+				System.out.println("Listener : channel opened!");
+				while (channel.read(buffer)<3);
 				buffer.flip(); // consult mode
 				queue.put(adaptBuffer(buffer));
 				buffer.flip(); // fill mode

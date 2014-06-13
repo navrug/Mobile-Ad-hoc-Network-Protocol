@@ -17,7 +17,7 @@ public class MessageThread implements Runnable
 	LSATable lsaTable;
 	BlockingQueue<ByteBuffer> queue;
 
-	MessageThread(HelloTable helloTable,
+	public MessageThread(HelloTable helloTable,
 			LSATable lsaTable,
 			BlockingQueue<ByteBuffer> queue)
 	{
@@ -47,6 +47,7 @@ public class MessageThread implements Runnable
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
+		System.out.println(queue.size());
 		char type = message.getChar();
 		message.get();
 		message.get();

@@ -1,5 +1,15 @@
 package routing;
 
-public class RoutingThread {
-
+public class RoutingThread implements Runnable
+{
+	RoutingTable table;
+	
+	public RoutingThread()
+	{
+		
+	}
+	public void run()
+	{
+		
+	}
 }
