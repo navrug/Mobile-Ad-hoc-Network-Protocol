@@ -11,7 +11,7 @@ import exceptions.WrongMessageType;
 public class LSAMessage
 {
 	private InetAddress sourceAddress;
-	private LinkedList<InetAddress> neighboursAdresses;
+	private LinkedList<InetAddress> neighborsAdresses;
 	private short sequenceNumber;
 	private short numberOfNeighbors;
 	
@@ -41,7 +41,7 @@ public class LSAMessage
 				byteAddress[j]=message.get();
 			}
 			try {
-				neighboursAdresses.add(InetAddress.getByAddress(byteAddress));
+				neighborsAdresses.add(InetAddress.getByAddress(byteAddress));
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			}
@@ -52,7 +52,7 @@ public class LSAMessage
 	{
 		sourceAddress = myAddress;
 		numberOfNeighbors = 0;
-		neighboursAdresses = new LinkedList<InetAddress>();
+		neighborsAdresses = new LinkedList<InetAddress>();
 		this.sequenceNumber = sequenceNumber;
 	}
 	
@@ -65,7 +65,7 @@ public class LSAMessage
 		buffer.put(sourceAddress.getAddress());
 		buffer.putShort(sequenceNumber);
 		buffer.putShort(numberOfNeighbors);
-		for (InetAddress address : neighboursAdresses)
+		for (InetAddress address : neighborsAdresses)
 			buffer.put(address.getAddress());
 		return buffer;
 		
@@ -74,6 +74,18 @@ public class LSAMessage
 	public void addNeighbor(InetAddress neighbor)
 	{
 		numberOfNeighbors++;
-		neighboursAdresses.add(neighbor);
+		neighborsAdresses.add(neighbor);
 	}
+
+	public LinkedList<InetAddress> neighbors()
+	{
+		return neighborsAdresses;
+	}
+	
+	public InetAddress source()
+	{
+		return sourceAddress;
+	}
+
+
 }
