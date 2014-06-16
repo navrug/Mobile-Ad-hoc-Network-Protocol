@@ -9,7 +9,7 @@ import lsa.LSAMessage;
 public class HelloTable
 {
 	private Hashtable<InetAddress, HelloMessage> table;
-	private static short sequenceNumberCounter = 0;
+	private static short sequenceNumber = 0;
 
 	public HelloTable()
 	{
@@ -19,7 +19,8 @@ public class HelloTable
 	
 	public void addHello(InetAddress neighbor, HelloMessage message)
 	{
-		table.put(neighbor, message);
+		if (!table.put(neighbor, message).equals(message))
+			sequenceNumber++;
 	}
 	
 	public HelloMessage createHello()
@@ -51,7 +52,7 @@ public class HelloTable
 			e.printStackTrace();
 		}
 		LSAMessage result = 
-				new LSAMessage(myAddress, sequenceNumberCounter++);
+				new LSAMessage(myAddress, sequenceNumber);
 		for (InetAddress neighbor : table.keySet())
 		{
 			if (table.get(neighbor).isSymmetric(myAddress))

@@ -25,7 +25,7 @@ public class MessageThread implements Runnable
 		this.lsaTable = lsaTable;
 		this.queue = queue;
 	}
-	
+
 	/*
 	 * Takes a ByteBuffer in consult mode, return a buffer in
 	 * consult mode
@@ -41,38 +41,42 @@ public class MessageThread implements Runnable
 
 	public void run()
 	{
-		ByteBuffer message = null;
-		try {
-			message = queue.take();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		System.out.println(queue.size());
-		char type = message.getChar();
-		message.get();
-		message.get();
-		message.get();
-		InetAddress sourceAddress = null;
-		byte[] byteAddress = new byte[4];
-		//Getting source address
-		for (int j = 0; j<4; j++) {
-			byteAddress[j] = message.get();
-		}
-		try {
-			sourceAddress =
-					InetAddress.getByAddress(byteAddress);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		switch (type) {
-		case 'h':
-			helloTable.addHello(sourceAddress,
-					new HelloMessage(adaptBuffer(message)));
-			break;
-		case 'l':
-			lsaTable.addLSA(sourceAddress, 
-					new LSAMessage(adaptBuffer(message)));
-			break;
+		while (true) {
+			ByteBuffer message = null;
+			try {
+				message = queue.take();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			System.out.println("[MessageThread] Operating a new message, "
+					+queue.size()
+					+" messages left to operate.");
+			char type = message.getChar();
+			message.get();
+			message.get();
+			message.get();
+			InetAddress sourceAddress = null;
+			byte[] byteAddress = new byte[4];
+			//Getting source address
+			for (int j = 0; j<4; j++) {
+				byteAddress[j] = message.get();
+			}
+			try {
+				sourceAddress =
+						InetAddress.getByAddress(byteAddress);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+			switch (type) {
+			case 'h':
+				helloTable.addHello(sourceAddress,
+						new HelloMessage(adaptBuffer(message)));
+				break;
+			case 'l':
+				lsaTable.addLSA(sourceAddress, 
+						new LSAMessage(adaptBuffer(message)));
+				break;
+			}
 		}
 	}
 

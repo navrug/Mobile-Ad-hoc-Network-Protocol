@@ -57,6 +57,11 @@ public class LSAMessage
 		this.sequenceNumber = sequenceNumber;
 	}
 	
+	public int sequenceNumber()
+	{
+		return sequenceNumber;
+	}
+	
 	public ByteBuffer toBuffer()
 	{
 		short messageSize = (short) (numberOfNeighbors*4 + 12);

@@ -81,6 +81,16 @@ public class HelloMessage
 		else throw new WrongMessageType();
 	}
 
+	public boolean equals(HelloMessage message)
+	{
+		boolean result = sourceAddress == message.sourceAddress
+				&& numberOfHeard == message.numberOfHeard
+				&& numberOfSymmetric == message.numberOfSymmetric
+				&& heardNeighbors.equals(message.heardNeighbors)
+				&& symmetricNeighbors.equals(message.symmetricNeighbors);
+		return result;
+	}
+
 	public ByteBuffer toBuffer() 
 	{
 		short bufferSize = (short)
@@ -100,7 +110,7 @@ public class HelloMessage
 		}
 		return buffer;
 	}
-	
+
 	public DatagramPacket toPacket() 
 	{
 		ByteBuffer buffer = toBuffer();

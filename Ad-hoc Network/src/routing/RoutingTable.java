@@ -7,14 +7,21 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
+import lsa.LSATable;
+
 public class RoutingTable
 {
 	Hashtable<InetAddress, InetAddress> table;
 	NetworkGraph graph;
 	
-	RoutingTable(NetworkGraph graph)
+	RoutingTable()
 	{
-		this.graph = graph;
+
+	}
+	
+	public void updateGraph(LSATable lsaTable)
+	{
+		graph = new NetworkGraph(lsaTable);
 		table = new Hashtable<InetAddress, InetAddress>();
 		HashSet<InetAddress> inserted = new HashSet<InetAddress>();
 		LinkedList<InetAddress> queue = new LinkedList<InetAddress>();

@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import routing.RoutingThread;
 import sender.Sender;
@@ -19,9 +21,12 @@ public class NetworkManager
 	
 	NetworkManager()
 	{
+		final ReentrantLock lock = new ReentrantLock();
+		final Condition notUpdated  = lock.newCondition();
+		
 		helloTable = new HelloTable();
-		lsaTable = new LSATable();
-
+		lsaTable = new LSATable(lock, notUpdated);
+		
 		Thread channel = new Thread(
 				new PacketManager(helloTable, lsaTable),
 				"PacketManager");
@@ -33,7 +38,7 @@ public class NetworkManager
 				new Sender(helloTable, channel),
 				"Sender");*/
 		Thread routing = new Thread(
-				new RoutingThread(),
+				new RoutingThread(lsaTable, lock, notUpdated),
 				"Routing");
 		
 		//listener.start();

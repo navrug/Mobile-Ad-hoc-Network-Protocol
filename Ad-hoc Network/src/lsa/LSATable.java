@@ -5,20 +5,30 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class LSATable{
 	private Hashtable<InetAddress, LSAMessage> table;
+	private final ReentrantLock lock;
+	private final Condition notUpdated;
 
-	public LSATable()
+	public LSATable(ReentrantLock lock, Condition notUpdated)
 	{
 		table = new Hashtable<InetAddress, LSAMessage>();
+		this.lock = lock;
+		this.notUpdated = notUpdated;
 	}
 	
 	
 	public void addLSA(InetAddress neighbor, LSAMessage message)
 	{
-		table.put(neighbor, message);
+		LSAMessage oldMessage = table.get(neighbor);
+		if (oldMessage.sequenceNumber() < message.sequenceNumber()) {
+			table.put(neighbor, message);
+			notUpdated.signal();
+		}
 	}
 	
 	public int numberOfNodes()
