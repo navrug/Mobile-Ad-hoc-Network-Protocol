@@ -1,5 +1,6 @@
 package lsa;
 
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -70,6 +71,22 @@ public class LSAMessage
 		return buffer;
 		
 	}
+	
+	public DatagramPacket toPacket() 
+	{
+		ByteBuffer buffer = toBuffer();
+		DatagramPacket packet = null;
+		try {
+			packet =  new DatagramPacket(buffer.array(),
+					buffer.capacity(),
+					InetAddress.getByName("255.255.255.255"),
+					1234);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		return packet;
+	}
+
 	
 	public void addNeighbor(InetAddress neighbor)
 	{

@@ -23,8 +23,8 @@ public class NetworkManager
 		lsaTable = new LSATable();
 
 		Thread channel = new Thread(
-				new ChannelManager(helloTable, lsaTable),
-				"ChannelManager");
+				new PacketManager(helloTable, lsaTable),
+				"PacketManager");
 		channel.start();
 		/*Thread listener = new Thread(
 				new Listener(helloTable, lsaTable, channel),

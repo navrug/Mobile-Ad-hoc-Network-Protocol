@@ -19,42 +19,8 @@ public class Main {
 		//System.out.println(buffer.toString());
 		//System.out.println(buffer.getChar());
 
-		//new NetworkManager();
+		new NetworkManager();
 
-		ByteBuffer listeningBuffer = ByteBuffer.allocate(65536);
-		long timeout = 100;
-		DatagramSocket socket = new DatagramSocket();
-		DatagramChannel channel = null;
-		try {
-			channel = DatagramChannel.open();
-			InetSocketAddress local = new InetSocketAddress(1234); 
-			channel.bind(local); 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		try {
-			channel.socket().setSoTimeout((int) timeout);
-		} catch (SocketException e1) {
-			e1.printStackTrace();
-		}
-		long t0 = System.currentTimeMillis();
-		try {
-			/*while((timeout >0)
-					&&!(InetAddress.getLocalHost()).equals(
-					channel.receive(listeningBuffer))){
-				System.out.println("Own address");
-				timeout = System.currentTimeMillis() - t0;
-				if (timeout > 0)
-					channel.socket().setSoTimeout((int) timeout);
-				t0 = System.currentTimeMillis();
-			}*/
-			channel.receive(listeningBuffer);
-		}
-		catch (IOException e) {
-			System.out.println("Nothing received");
-			return;
-		}
-	}
-
+}
 }
