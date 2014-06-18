@@ -15,9 +15,7 @@ import sender.Sender;
 public class Main {
 
 	public static void main(String[] args) throws SocketException {
-
-		//System.out.println(buffer.toString());
-		//System.out.println(buffer.getChar());
+	
 
 		new NetworkManager();
 

@@ -2,6 +2,7 @@ package lsa;
 
 
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
@@ -28,7 +29,14 @@ public class LSATable{
 		if (oldMessage.sequenceNumber() < message.sequenceNumber()) {
 			table.put(neighbor, message);
 			notUpdated.signal();
+			
 		}
+	}
+	
+	public boolean isLatest(InetAddress address, ByteBuffer buffer)
+	{
+		return table.get(address).sequenceNumber() 
+				== 256*buffer.array()[8]+buffer.array()[9];
 	}
 	
 	public int numberOfNodes()
