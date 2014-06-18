@@ -95,7 +95,7 @@ public class ChannelManager implements Runnable
 			while (true) {
 				System.out.println("New iteration of sender");
 				hello = helloTable.createHello();
-				sendingBufferhello.toBuffer();
+				sendingBuffer=hello.toBuffer();
 				sendingBuffer.flip(); // now in consult mode
 				channel.send(
 						sendingBuffer,
