@@ -36,8 +36,9 @@ public class LSATable{
 	
 	public boolean isLatest(InetAddress address, ByteBuffer buffer)
 	{
-		return table.get(address).sequenceNumber() 
-				== 256*buffer.array()[8]+buffer.array()[9];
+		LSAMessage latest = table.get(address);
+		return latest == null || latest.sequenceNumber() 
+				< 256*buffer.array()[8]+buffer.array()[9];
 	}
 	
 	public int numberOfNodes()
