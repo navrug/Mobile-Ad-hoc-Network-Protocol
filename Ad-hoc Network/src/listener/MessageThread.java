@@ -72,12 +72,14 @@ public class MessageThread implements Runnable
 			}
 			switch (type) {
 			case helloType:
-				helloTable.addHello(sourceAddress,
-						new HelloMessage(adaptBuffer(message)));
+				HelloMessage hello = new HelloMessage(adaptBuffer(message));
+				hello.display();
+				helloTable.addHello(sourceAddress, hello);
 				break;
 			case lsaType:
-				lsaTable.addLSA(sourceAddress, 
-						new LSAMessage(adaptBuffer(message)));
+				LSAMessage lsa = new LSAMessage(adaptBuffer(message));
+				lsa.display();
+				lsaTable.addLSA(sourceAddress, lsa);
 				break;
 			}
 		}
