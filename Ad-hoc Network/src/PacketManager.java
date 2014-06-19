@@ -87,7 +87,7 @@ public class PacketManager implements Runnable
 					numberOfPackets++;
 				/*}
 				else
-					System.out.println("Received from own address");*/
+					System.out.println("Received from own address : "+ packet.getAddress());*/
 				t = System.currentTimeMillis();
 				socket.setSoTimeout((int)(timeout-(t-ti)));
 			}
