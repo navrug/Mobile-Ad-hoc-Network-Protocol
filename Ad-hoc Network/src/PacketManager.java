@@ -36,7 +36,8 @@ public class PacketManager implements Runnable
 		this.lsaTable = lsaTable;
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
-			socket = new DatagramSocket(1234, InetAddress.getByName("0.0.0.0"));
+			socket = new DatagramSocket(1234,
+					InetAddress.getByName("0.0.0.0"));
 			socket.setBroadcast(true);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -56,47 +57,58 @@ public class PacketManager implements Runnable
 
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
-			{
+	{
 		long ti = System.currentTimeMillis();
 		long t = ti;
-		System.out.println("Listening for "+timeout+" ms");
+		System.out.println(
+				"[PacketManager] Listening for "
+						+timeout+" ms...");
 		socket.setSoTimeout(timeout);
 		DatagramPacket packet = 
-				new DatagramPacket(listeningBuffer, listeningBuffer.length);		
+				new DatagramPacket(listeningBuffer,
+						listeningBuffer.length);		
 		ByteBuffer buffer;
 		int numberOfPackets = 0;
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
 				socket.receive(packet);
-				//if (!(InetAddress.getLocalHost().getHostAddress()).equals(
-				//		packet.getAddress().getHostAddress())) {
+				if (!(InetAddress.getLocalHost()
+						.getHostAddress()).equals(
+								packet.getAddress().getHostAddress())) {
 					System.out.println(
-							"[PacketManager] Packet received from "+packet.getAddress());
+							"[PacketManager] Packet received from "
+									+packet.getAddress());
+					numberOfPackets++;
 					buffer = ByteBuffer.allocate(packet.getData().length);
 					buffer.put(packet.getData());
 					buffer.flip();
 					//Depends on the encoding !!
-					if (buffer.array()[0]==0
-							&& buffer.array()[0]==108
-							&& lsaTable.isLatest(packet.getAddress(), buffer))
+					if (buffer.array()[0]==MessageThread.lsaType
+							&& lsaTable.isLatest(
+									packet.getAddress(), 
+									buffer))
 						socket.send(packet);
-					System.out.println(queue.size());
 					queue.add(buffer);
-					System.out.println(queue.size());
-					System.out.println("[PacketManager] Buffer added to the queue.");
-					numberOfPackets++;
-				/*}
+					//System.out.println(
+					//"[PacketManager] Buffer added to the queue.");
+
+				}
 				else
-					System.out.println("Received from own address : "+ packet.getAddress());*/
+					System.out.println(
+							"[PacketManager] Received from own address : "
+									+ packet.getAddress());
 				t = System.currentTimeMillis();
 				socket.setSoTimeout((int)(timeout-(t-ti)));
 			}
 		}
 		catch (SocketTimeoutException e) {
-			System.out.println(
-					"Received "+numberOfPackets+" packets in "+timeout+" ms");
+
 		}
-			}
+		System.out.println(
+				"[PacketManager] Received "
+						+numberOfPackets
+						+" packets in "+timeout+" ms.");
+	}
 
 	public void run() {
 		Random r = new Random(System.currentTimeMillis());
@@ -118,17 +130,19 @@ public class PacketManager implements Runnable
 			 * that is one hell per period and one LSA every two periods
 			 */
 			while (true) {
-				System.out.println("New iteration of sender");
 				hello = helloTable.createHello();
 				socket.send(hello.toPacket());
+				System.out.println("[PacketManager] Hello sent.");
 				listen(listenData, helloPeriod 
 						+ r.nextInt(2*deviationRange)-deviationRange);
 				hello = helloTable.createHello();
 				socket.send(hello.toPacket());
+				System.out.println("[PacketManager] Hello sent.");
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
 				lsa = helloTable.createLSA();
 				socket.send(lsa.toPacket());
+				System.out.println("[PacketManager] LSA #"+lsa.sequenceNumber()+" sent.");
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
 			}

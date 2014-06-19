@@ -62,16 +62,21 @@ public class LSAMessage
 	public void display()
 	{
 		System.out.println("###################################");
+		System.out.print("#  ");
 		System.out.print("LSA");
 		System.out.print("        ");
 		System.out.println("Size : "+
 				(numberOfNeighbors*4 + 12)+" bytes");
+		System.out.print("#  ");
 		System.out.println("From : "+sourceAddress);
+		System.out.print("#  ");
 		System.out.print("Sequence number : "+sequenceNumber);
 		System.out.print("        ");
 		System.out.println(numberOfNeighbors+" neighbors");
-		for (InetAddress neighbor : neighborsAdresses)
+		for (InetAddress neighbor : neighborsAdresses) {
+			System.out.print("#  ");
 			System.out.println(neighbor);
+		}
 		System.out.println("###################################");
 	}
 	

@@ -89,17 +89,25 @@ public class HelloMessage
 	public void display()
 	{
 		System.out.println("###################################");
+		System.out.print("#  ");
 		System.out.print("Hello");
 		System.out.print("        ");
 		System.out.println("Size : "+
 				(4*(4 + numberOfHeard + numberOfSymmetric))+" bytes");
+		System.out.print("#  ");
 		System.out.println("From : "+sourceAddress);
+		System.out.print("#  ");
 		System.out.println(numberOfHeard+" heard neighbors");
-		for (InetAddress neighbor : heardNeighbors)
+		for (InetAddress neighbor : heardNeighbors) {
+			System.out.print("#  ");
 			System.out.println(neighbor);
+		}
+		System.out.print("#  ");
 		System.out.println(numberOfSymmetric+" symmetric neighbors");
-		for (InetAddress neighbor : symmetricNeighbors)
+		for (InetAddress neighbor : symmetricNeighbors) {
+			System.out.print("#  ");
 			System.out.println(neighbor);
+		}
 		System.out.println("###################################");
 	}
 

@@ -44,13 +44,11 @@ public class MessageThread implements Runnable
 
 	public void run()
 	{
-		System.out.println("[MessageThread] Waiting for a message...");
 		while (true) {
 			ByteBuffer message = null;
 			try {
-				System.out.println("[MessageThread] Taking a message...");
+				System.out.println("[MessageThread] Waiting for a message...");
 				message = queue.take();
-				System.out.println("[MessageThread] Message taken.");
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
