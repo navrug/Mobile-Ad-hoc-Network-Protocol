@@ -19,7 +19,7 @@ public class HelloTable
 	
 	public void addHello(InetAddress neighbor, HelloMessage message)
 	{
-		if (!table.put(neighbor, message).equals(message))
+		if (!message.equals(table.put(neighbor, message)))
 			sequenceNumber++;
 	}
 	

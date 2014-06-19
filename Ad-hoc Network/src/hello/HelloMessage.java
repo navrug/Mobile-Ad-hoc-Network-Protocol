@@ -18,7 +18,7 @@ public class HelloMessage
 	private int numberOfSymmetric;
 
 
-	HelloMessage(InetAddress myAddress)
+	public HelloMessage(InetAddress myAddress)
 	{
 		sourceAddress = myAddress;
 		numberOfHeard = 0;
@@ -49,7 +49,7 @@ public class HelloMessage
 				e.printStackTrace();
 			}
 			//Heard neighbors listing
-			numberOfHeard = message.getShort();
+			numberOfHeard = message.get();
 			message.get();
 			message.get();
 			message.get();
@@ -66,11 +66,11 @@ public class HelloMessage
 				}
 			}
 			//Symmetric neighbors listing
-			numberOfSymmetric = message.getShort();
+			numberOfSymmetric = message.get();
 			message.get();
 			message.get();
 			message.get();
-			heardNeighbors = new LinkedList<InetAddress>();
+			symmetricNeighbors = new LinkedList<InetAddress>();
 			for (int i = 0; i<numberOfHeard; i++) {
 				for (int j = 0; j<4; j++) {
 					byteAddress[j] = message.get();
@@ -105,7 +105,8 @@ public class HelloMessage
 
 	public boolean equals(HelloMessage message)
 	{
-		boolean result = sourceAddress == message.sourceAddress
+		boolean result = message != null
+				&& sourceAddress == message.sourceAddress
 				&& numberOfHeard == message.numberOfHeard
 				&& numberOfSymmetric == message.numberOfSymmetric
 				&& heardNeighbors.equals(message.heardNeighbors)

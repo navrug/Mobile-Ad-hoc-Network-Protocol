@@ -31,6 +31,7 @@ public class NetworkManager
 				new PacketManager(helloTable, lsaTable),
 				"PacketManager");
 		channel.start();
+		System.out.println("[NetworkManager] PacketManager launched.");
 		/*Thread listener = new Thread(
 				new Listener(helloTable, lsaTable, channel),
 				"Listener");
@@ -40,7 +41,7 @@ public class NetworkManager
 		Thread routing = new Thread(
 				new RoutingThread(lsaTable, lock, notUpdated),
 				"Routing");
-		
+		System.out.println("[NetworkManager] RoutingThread launched.");
 		//listener.start();
 		//sender.start();
 		routing.start();

@@ -25,7 +25,7 @@ public class PacketManager implements Runnable
 	private HelloTable helloTable;
 	private LSATable lsaTable;
 	private DatagramSocket socket;
-	BlockingQueue<ByteBuffer> queue;
+	private BlockingQueue<ByteBuffer> queue;
 	private static int helloPeriod = 2000;
 	private static int deviationRange = 100;
 
@@ -68,10 +68,10 @@ public class PacketManager implements Runnable
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
 				socket.receive(packet);
-				if (!(InetAddress.getLocalHost().getHostAddress()).equals(
-						packet.getAddress().getHostAddress())) {
+				//if (!(InetAddress.getLocalHost().getHostAddress()).equals(
+				//		packet.getAddress().getHostAddress())) {
 					System.out.println(
-							"Packet received from "+packet.getAddress());
+							"[PacketManager] Packet received from "+packet.getAddress());
 					buffer = ByteBuffer.allocate(packet.getData().length);
 					buffer.put(packet.getData());
 					buffer.flip();
@@ -80,11 +80,14 @@ public class PacketManager implements Runnable
 							&& buffer.array()[0]==108
 							&& lsaTable.isLatest(packet.getAddress(), buffer))
 						socket.send(packet);
+					System.out.println(queue.size());
 					queue.add(buffer);
+					System.out.println(queue.size());
+					System.out.println("[PacketManager] Buffer added to the queue.");
 					numberOfPackets++;
-				}
+				/*}
 				else
-					System.out.println("Received from own address");
+					System.out.println("Received from own address");*/
 				t = System.currentTimeMillis();
 				socket.setSoTimeout((int)(timeout-(t-ti)));
 			}
@@ -100,13 +103,13 @@ public class PacketManager implements Runnable
 		HelloMessage hello;
 		LSAMessage lsa;
 		byte[] listenData = new byte [65535];
-		BlockingQueue<ByteBuffer> queue = 
-				new LinkedBlockingQueue<ByteBuffer>();
+		queue = new LinkedBlockingQueue<ByteBuffer>();
 		new Thread(
 				new MessageThread(helloTable,
 						lsaTable,
 						queue),
 				"MessageThread").start();
+		System.out.println("[PacketManager] MessageThread launched.");
 		try {
 			/*
 			 * An iteration of the loop contains two hellos and one LSA

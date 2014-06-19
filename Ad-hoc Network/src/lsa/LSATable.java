@@ -26,7 +26,8 @@ public class LSATable{
 	public void addLSA(InetAddress neighbor, LSAMessage message)
 	{
 		LSAMessage oldMessage = table.get(neighbor);
-		if (oldMessage.sequenceNumber() < message.sequenceNumber()) {
+		if (oldMessage != null && 
+				oldMessage.sequenceNumber() < message.sequenceNumber()) {
 			table.put(neighbor, message);
 			notUpdated.signal();
 			

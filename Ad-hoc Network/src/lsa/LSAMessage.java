@@ -22,7 +22,7 @@ public class LSAMessage
 		byte type = message.get();
 		if (type != MessageThread.lsaType)
 			throw new WrongMessageType();
-		message.getChar();
+		message.get();
 		message.get();
 		byte[] byteAddress = new byte[4];
 		//Getting source address
@@ -37,6 +37,7 @@ public class LSAMessage
 		}
 		sequenceNumber = message.getShort();
 		numberOfNeighbors = message.getShort();
+		neighborsAdresses = new LinkedList<InetAddress>();
 		for (int i = 0; i < numberOfNeighbors ; i++) {
 			
 			for (int j = 0; j < 4; j++) {
@@ -61,7 +62,7 @@ public class LSAMessage
 	public void display()
 	{
 		System.out.println("###################################");
-		System.out.print("Hello");
+		System.out.print("LSA");
 		System.out.print("        ");
 		System.out.println("Size : "+
 				(numberOfNeighbors*4 + 12)+" bytes");
