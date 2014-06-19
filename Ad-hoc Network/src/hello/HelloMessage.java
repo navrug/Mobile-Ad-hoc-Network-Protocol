@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+import listener.MessageThread;
 import exceptions.WrongMessageType;
 
 public class HelloMessage
@@ -15,6 +16,7 @@ public class HelloMessage
 	private int numberOfHeard;
 	private LinkedList<InetAddress> symmetricNeighbors;
 	private int numberOfSymmetric;
+
 
 	HelloMessage(InetAddress myAddress)
 	{
@@ -26,10 +28,13 @@ public class HelloMessage
 	}
 
 
+
+
+
 	public HelloMessage(ByteBuffer message)
 	{
 		byte[] byteAddress = new byte[4];
-		if (message.getChar() == 'h') {
+		if (message.get() == MessageThread.helloType) {
 			message.get();
 			message.get();
 			message.get();
@@ -81,6 +86,23 @@ public class HelloMessage
 		else throw new WrongMessageType();
 	}
 
+	public void display()
+	{
+		System.out.println("###################################");
+		System.out.print("Hello");
+		System.out.print("        ");
+		System.out.println("Size : "+
+				(4*(4 + numberOfHeard + numberOfSymmetric))+" bytes");
+		System.out.println("From : "+sourceAddress);
+		System.out.println(numberOfHeard+" heard neighbors");
+		for (InetAddress neighbor : heardNeighbors)
+			System.out.println(neighbor);
+		System.out.println(numberOfSymmetric+" symmetric neighbors");
+		for (InetAddress neighbor : symmetricNeighbors)
+			System.out.println(neighbor);
+		System.out.println("###################################");
+	}
+
 	public boolean equals(HelloMessage message)
 	{
 		boolean result = sourceAddress == message.sourceAddress
@@ -96,7 +118,7 @@ public class HelloMessage
 		short bufferSize = (short)
 				(4*(4 + numberOfHeard + numberOfSymmetric));
 		ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-		buffer.putChar('h');
+		buffer.put(MessageThread.helloType);
 		buffer.put((byte) 0);
 		buffer.putShort(bufferSize);
 		buffer.put(sourceAddress.getAddress());

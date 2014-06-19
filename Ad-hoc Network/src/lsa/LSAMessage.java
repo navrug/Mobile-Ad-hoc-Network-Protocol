@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+import listener.MessageThread;
 import exceptions.WrongMessageType;
 
 
@@ -18,8 +19,8 @@ public class LSAMessage
 	
 	public LSAMessage(ByteBuffer message)
 	{
-		char type = message.getChar();
-		if (type != 'l')
+		byte type = message.get();
+		if (type != MessageThread.lsaType)
 			throw new WrongMessageType();
 		message.getChar();
 		message.get();
@@ -57,6 +58,22 @@ public class LSAMessage
 		this.sequenceNumber = sequenceNumber;
 	}
 	
+	public void display()
+	{
+		System.out.println("###################################");
+		System.out.print("Hello");
+		System.out.print("        ");
+		System.out.println("Size : "+
+				(numberOfNeighbors*4 + 12)+" bytes");
+		System.out.println("From : "+sourceAddress);
+		System.out.print("Sequence number : "+sequenceNumber);
+		System.out.print("        ");
+		System.out.println(numberOfNeighbors+" neighbors");
+		for (InetAddress neighbor : neighborsAdresses)
+			System.out.println(neighbor);
+		System.out.println("###################################");
+	}
+	
 	public int sequenceNumber()
 	{
 		return sequenceNumber;
@@ -66,7 +83,7 @@ public class LSAMessage
 	{
 		short messageSize = (short) (numberOfNeighbors*4 + 12);
 		ByteBuffer buffer = ByteBuffer.allocate(messageSize);
-		buffer.putChar('l');
+		buffer.put(MessageThread.lsaType);
 		buffer.putShort(messageSize);
 		buffer.put(sourceAddress.getAddress());
 		buffer.putShort(sequenceNumber);

@@ -16,6 +16,8 @@ public class MessageThread implements Runnable
 	HelloTable helloTable;
 	LSATable lsaTable;
 	BlockingQueue<ByteBuffer> queue;
+	public static final byte helloType = 0;
+	public static final byte lsaType = 1;
 
 	public MessageThread(HelloTable helloTable,
 			LSATable lsaTable,
@@ -52,7 +54,7 @@ public class MessageThread implements Runnable
 			System.out.println("[MessageThread] Operating a new message, "
 					+queue.size()
 					+" messages left to operate.");
-			char type = message.getChar();
+			byte type = message.get();
 			message.get();
 			message.get();
 			message.get();
@@ -69,11 +71,11 @@ public class MessageThread implements Runnable
 				e.printStackTrace();
 			}
 			switch (type) {
-			case 'h':
+			case helloType:
 				helloTable.addHello(sourceAddress,
 						new HelloMessage(adaptBuffer(message)));
 				break;
-			case 'l':
+			case lsaType:
 				lsaTable.addLSA(sourceAddress, 
 						new LSAMessage(adaptBuffer(message)));
 				break;
