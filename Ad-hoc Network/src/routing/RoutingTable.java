@@ -1,5 +1,6 @@
 package routing;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -13,12 +14,27 @@ public class RoutingTable
 {
 	Hashtable<InetAddress, InetAddress> table;
 	NetworkGraph graph;
-	
+
 	RoutingTable()
 	{
-
 	}
-	
+
+	public void writeTable()
+	{
+		try {
+			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
+			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
+			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
+
+			for( InetAddress m : table.keySet())
+			{
+				Runtime.getRuntime().exec("ip route add to " + m.getHostAddress() + "/32 via " + table.get(m).getHostAddress());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void updateGraph(LSATable lsaTable)
 	{
 		graph = new NetworkGraph(lsaTable);
@@ -37,7 +53,7 @@ public class RoutingTable
 					inserted,
 					queue);
 	}
-	
+
 	private void addNeighbors(InetAddress a,
 			HashSet<InetAddress> inserted,
 			LinkedList<InetAddress> queue)
@@ -48,7 +64,6 @@ public class RoutingTable
 				table.put(b, a);
 				queue.add(b);
 			}
-		
-			
 	}
+
 }

@@ -32,6 +32,7 @@ public class MessageThread implements Runnable
 	 */
 	private static ByteBuffer adaptBuffer(ByteBuffer original)
 	{
+		original.position(0);
 		ByteBuffer clone = ByteBuffer.allocate(original.limit());
 		for (int pos = 0; pos < original.limit(); pos++)
 			clone.put(original.get());

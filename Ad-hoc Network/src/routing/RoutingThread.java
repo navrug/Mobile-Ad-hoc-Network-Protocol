@@ -1,5 +1,7 @@
 package routing;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -19,10 +21,17 @@ public class RoutingThread implements Runnable
 		this.lsaTable = lsaTable;
 		this.lock = lock;
 		this.notUpdated = notUpdated;
+		
+		try {
+		Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
+	} catch (IOException e1) {
+		e1.printStackTrace();
+	}
+		
 	}
 
 	public void run()
-	{
+	{		
 		lock.lock();
 		try {
 			while (true) {

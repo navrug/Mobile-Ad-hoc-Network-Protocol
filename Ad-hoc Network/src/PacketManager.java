@@ -45,6 +45,7 @@ public class PacketManager implements Runnable
 
 	private static ByteBuffer adaptBuffer(ByteBuffer original)
 	{
+		original.position(0);
 		ByteBuffer clone = ByteBuffer.allocate(original.limit());
 		for (int pos = 0; pos<original.limit(); pos++) {
 			clone.put(original.get());
@@ -55,7 +56,7 @@ public class PacketManager implements Runnable
 
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
-	{
+			{
 		long ti = System.currentTimeMillis();
 		long t = ti;
 		System.out.println("Listening for "+timeout+" ms");
@@ -92,7 +93,7 @@ public class PacketManager implements Runnable
 			System.out.println(
 					"Received "+numberOfPackets+" packets in "+timeout+" ms");
 		}
-	}
+			}
 
 	public void run() {
 		Random r = new Random(System.currentTimeMillis());
