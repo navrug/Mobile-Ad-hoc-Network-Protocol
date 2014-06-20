@@ -12,7 +12,7 @@ import lsa.LSATable;
 
 public class RoutingTable
 {
-	Hashtable<InetAddress, InetAddress> table;
+	Hashtable<String, InetAddress> table;
 	NetworkGraph graph;
 
 	public RoutingTable()
@@ -26,9 +26,9 @@ public class RoutingTable
 			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
 			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
 
-			for( InetAddress m : table.keySet())
+			for( String m : table.keySet())
 			{
-				Runtime.getRuntime().exec("ip route add to " + m.getHostAddress() + "/32 via " + table.get(m).getHostAddress());
+				Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m).getHostAddress());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -38,7 +38,7 @@ public class RoutingTable
 	public void updateGraph(LSATable lsaTable)
 	{
 		graph = new NetworkGraph(lsaTable);
-		table = new Hashtable<InetAddress, InetAddress>();
+		table = new Hashtable<String, InetAddress>();
 		HashSet<InetAddress> inserted = new HashSet<InetAddress>();
 		LinkedList<InetAddress> queue = new LinkedList<InetAddress>();
 		try {
@@ -61,7 +61,7 @@ public class RoutingTable
 		for (InetAddress b : graph.neighbors(a))
 			if (!inserted.contains(b)) {
 				inserted.add(b);
-				table.put(b, a);
+				table.put(b.getHostAddress(), a);
 				queue.add(b);
 			}
 	}
