@@ -5,15 +5,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.ReentrantLock;
 
 import listener.MessageThread;
 import lsa.LSAMessage;
@@ -60,6 +56,14 @@ public class PacketManager implements Runnable
 	{
 		long ti = System.currentTimeMillis();
 		long t = ti;
+		/*
+		 * Debugging
+		 */
+		Blacklist blacklist = new Blacklist();
+		//blacklist.add("192.168.181.130");
+		/*
+		 * Debugging
+		 */
 		System.out.println(
 				"[PacketManager] Listening for "
 						+timeout+" ms...");
@@ -72,9 +76,17 @@ public class PacketManager implements Runnable
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
 				socket.receive(packet);
-				/*if (!(InetAddress.getLocalHost()
+				/*
+				 * Debugging
+				 */
+				if ( !blacklist.contains(packet.getAddress().getHostAddress())) {
+				/*
+				 * Debugging
+				 */
+				
+				if (!(InetAddress.getLocalHost()
 						.getHostAddress()).equals(
-								packet.getAddress().getHostAddress()))*/ {
+								packet.getAddress().getHostAddress())) {
 					System.out.println(
 							"[PacketManager] Packet received from "
 									+packet.getAddress());
@@ -96,10 +108,18 @@ public class PacketManager implements Runnable
 					//"[PacketManager] Buffer added to the queue.");
 
 				}
-				/*else
+				else
 					System.out.println(
 							"[PacketManager] Received from own address : "
-									+ packet.getAddress());*/
+									+ packet.getAddress());
+				/*
+				 * Debugging
+				 */
+			}
+				/*
+				 * Debugging
+				 */
+				
 				t = System.currentTimeMillis();
 				socket.setSoTimeout((int)(timeout-(t-ti)));
 			}

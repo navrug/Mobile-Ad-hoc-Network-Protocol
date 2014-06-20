@@ -8,10 +8,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-
 import lsa.LSAMessage;
-import sender.Sender;
-
 
 public class Main {
 
