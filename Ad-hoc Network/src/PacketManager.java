@@ -57,7 +57,7 @@ public class PacketManager implements Runnable
 	}
 	
 	/*
-	 * Prend en argument le buffer stockant temporarement le message, et écoute pendant timeout
+	 * Prend en argument le buffer stockant temporarement le message, et ecoute pendant timeout
 	 */
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
