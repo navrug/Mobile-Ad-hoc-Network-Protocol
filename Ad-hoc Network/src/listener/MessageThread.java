@@ -78,8 +78,7 @@ public class MessageThread implements Runnable
 				helloTable.addHello(sourceAddress, hello);
 				break;
 			case lsaType:
-				//System.out.println("Sequence "+message.array()[8]);
-				//System.out.println("Sequence "+message.array()[9]);
+				System.out.println("Found a LSA !!!!");
 				LSAMessage lsa = new LSAMessage(adaptBuffer(message));
 				lsa.display();
 				lsaTable.addLSA(sourceAddress, lsa);

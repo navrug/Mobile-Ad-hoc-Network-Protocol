@@ -24,6 +24,7 @@ public class LSAMessage
 			throw new WrongMessageType();
 		message.get();
 		message.get();
+		message.get();
 		byte[] byteAddress = new byte[4];
 		//Getting source address
 		for (int j = 0; j<4; j++) {
@@ -90,6 +91,7 @@ public class LSAMessage
 		short messageSize = (short) (numberOfNeighbors*4 + 12);
 		ByteBuffer buffer = ByteBuffer.allocate(messageSize);
 		buffer.put(MessageThread.lsaType);
+		buffer.put((byte)0);
 		buffer.putShort(messageSize);
 		buffer.put(sourceAddress.getAddress());
 		buffer.putShort(sequenceNumber);

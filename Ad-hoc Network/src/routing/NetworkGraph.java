@@ -17,10 +17,12 @@ public class NetworkGraph
 	
 	NetworkGraph(LSATable table)
 	{
+		graph = new Hashtable<InetAddress, HashSet<InetAddress>>();
 		numberOfNodes = table.numberOfNodes();
 		neighbor = new boolean[numberOfNodes][];
 		for (int i = 0; i<numberOfNodes; i++)
 			neighbor[i] = new boolean[numberOfNodes];
+		addresses = new InetAddress[numberOfNodes];
 		int i = 0;
 		for (InetAddress address : table.addresses()) {
 			addresses[i] = address;

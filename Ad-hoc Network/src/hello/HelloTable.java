@@ -19,8 +19,8 @@ public class HelloTable
 	
 	public void addHello(InetAddress neighbor, HelloMessage message)
 	{
-		if (!message.equals(table.put(neighbor, message)))
-			sequenceNumber++;
+		/*if (!message.equals(*/table.put(neighbor, message)/*))
+			sequenceNumber++*/;
 	}
 	
 	public HelloMessage createHello()
@@ -52,7 +52,7 @@ public class HelloTable
 			e.printStackTrace();
 		}
 		LSAMessage result = 
-				new LSAMessage(myAddress, sequenceNumber);
+				new LSAMessage(myAddress, sequenceNumber++);
 		for (InetAddress neighbor : table.keySet())
 		{
 			if (table.get(neighbor).isSymmetric(myAddress))

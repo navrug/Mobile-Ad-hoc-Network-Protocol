@@ -10,7 +10,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -55,10 +54,7 @@ public class PacketManager implements Runnable
 		clone.flip();
 		return clone;
 	}
-	
-	/*
-	 * Prend en argument le buffer stockant temporarement le message, et ecoute pendant timeout
-	 */
+
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
 	{
@@ -76,52 +72,34 @@ public class PacketManager implements Runnable
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
 				socket.receive(packet);
-				
-				/*
-				 * Code pour debogage
-				 */
-				Blacklist blacklist = new Blacklist();
-				//blacklist.add("192.168.181.1");
-				if ( !blacklist.contains(packet.getAddress().getHostAddress())) {					
-				/*
-				 * Fin code debogage
-				 */
-				
-				if (!(InetAddress.getLocalHost()
+				/*if (!(InetAddress.getLocalHost()
 						.getHostAddress()).equals(
-								packet.getAddress().getHostAddress())) {
+								packet.getAddress().getHostAddress()))*/ {
 					System.out.println(
 							"[PacketManager] Packet received from "
 									+packet.getAddress());
 					numberOfPackets++;
 					buffer = ByteBuffer.allocate(packet.getData().length);
 					buffer.put(packet.getData());
-					buffer.flip();
+					buffer.flip(); // consult mode
 					//Depends on the encoding !!
 					if (buffer.array()[0]==MessageThread.lsaType
 							&& lsaTable.isLatest(
 									packet.getAddress(), 
-									buffer))
+									buffer)) {
+						System.out.println(
+								"[PacketManager] LSA forwarded.");
 						socket.send(packet);
+					}
 					queue.add(buffer);
 					//System.out.println(
 					//"[PacketManager] Buffer added to the queue.");
 
 				}
-				else
+				/*else
 					System.out.println(
 							"[PacketManager] Received from own address : "
-									+ packet.getAddress().getHostAddress());
-				/*
-				 * Code pour débogage
-				 */
-				
-				}
-				
-				/*
-				 * Fin code debogage
-				 */
-				
+									+ packet.getAddress());*/
 				t = System.currentTimeMillis();
 				socket.setSoTimeout((int)(timeout-(t-ti)));
 			}

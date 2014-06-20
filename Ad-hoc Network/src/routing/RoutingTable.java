@@ -15,7 +15,7 @@ public class RoutingTable
 	Hashtable<InetAddress, InetAddress> table;
 	NetworkGraph graph;
 
-	RoutingTable()
+	public RoutingTable()
 	{
 	}
 
