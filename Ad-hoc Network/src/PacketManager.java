@@ -78,7 +78,7 @@ public class PacketManager implements Runnable
 				socket.receive(packet);
 				
 				/*
-				 * Code pour débogage
+				 * Code pour debogage
 				 */
 				Blacklist blacklist = new Blacklist();
 				//blacklist.add("192.168.181.1");
