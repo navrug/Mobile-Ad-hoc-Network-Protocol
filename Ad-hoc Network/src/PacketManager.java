@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -54,7 +55,10 @@ public class PacketManager implements Runnable
 		clone.flip();
 		return clone;
 	}
-
+	
+	/*
+	 * Prend en argument le buffer stockant temporarement le message, et écoute pendant timeout
+	 */
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
 	{
@@ -72,6 +76,17 @@ public class PacketManager implements Runnable
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
 				socket.receive(packet);
+				
+				/*
+				 * Code pour débogage
+				 */
+				Blacklist blacklist = new Blacklist();
+				//blacklist.add("192.168.181.1");
+				if ( !blacklist.contains(packet.getAddress().getHostAddress())) {					
+				/*
+				 * Fin code debogage
+				 */
+				
 				if (!(InetAddress.getLocalHost()
 						.getHostAddress()).equals(
 								packet.getAddress().getHostAddress())) {
@@ -96,7 +111,17 @@ public class PacketManager implements Runnable
 				else
 					System.out.println(
 							"[PacketManager] Received from own address : "
-									+ packet.getAddress());
+									+ packet.getAddress().getHostAddress());
+				/*
+				 * Code pour débogage
+				 */
+				
+				}
+				
+				/*
+				 * Fin code debogage
+				 */
+				
 				t = System.currentTimeMillis();
 				socket.setSoTimeout((int)(timeout-(t-ti)));
 			}
