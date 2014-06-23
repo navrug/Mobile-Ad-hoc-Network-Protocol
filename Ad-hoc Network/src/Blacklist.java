@@ -1,20 +1,22 @@
 import java.util.ArrayList;
 
+import utilities.IP;
+
 
 public class Blacklist {
 
-	private ArrayList<String> list;
+	private ArrayList<IP> list;
 	
 	public Blacklist() {
-		list=new ArrayList<String>();
+		list=new ArrayList<IP>();
 	}
 
-	public void add (String address) {
+	public void add (IP address) {
 		list.add(address);
 	}
 
-	public boolean contains (String address) {
-		for (String addresslist : list) {
+	public boolean contains (IP address) {
+		for (IP addresslist : list) {
 			if (addresslist.equals(address)) return true;
 		}
 		return false;

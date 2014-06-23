@@ -41,27 +41,18 @@ public class PacketManager implements Runnable
 		}
 			}
 
-	private static ByteBuffer adaptBuffer(ByteBuffer original)
-	{
-		original.position(0);
-		ByteBuffer clone = ByteBuffer.allocate(original.limit());
-		for (int pos = 0; pos<original.limit(); pos++) {
-			clone.put(original.get());
-		}
-		clone.flip();
-		return clone;
-	}
 
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
 	{
+		IP myIP = new IP(InetAddress.getLocalHost());
 		long ti = System.currentTimeMillis();
 		long t = ti;
 		/*
 		 * Debugging
 		 */
 		Blacklist blacklist = new Blacklist();
-		//blacklist.add("192.168.181.130");
+		//blacklist.add(new IP(192,168,181,130));
 		/*
 		 * Debugging
 		 */
@@ -80,19 +71,18 @@ public class PacketManager implements Runnable
 				/*
 				 * Debugging
 				 */
-				if ( !blacklist.contains(packet.getAddress().getHostAddress())) {
+				if (!blacklist.contains(new IP(packet.getAddress()))) {
 				/*
 				 * Debugging
 				 */
 				
-				if (!(InetAddress.getLocalHost()
-						.getHostAddress()).equals(
-								packet.getAddress().getHostAddress())) {
+				if (!myIP.equals(new IP(packet.getAddress()))) {
 					System.out.println(
 							"[PacketManager] Packet received from "
 									+packet.getAddress());
 					numberOfPackets++;
-					buffer = ByteBuffer.allocate(packet.getData().length);
+					buffer = ByteBuffer.allocate(
+							packet.getData().length);
 					buffer.put(packet.getData());
 					buffer.flip(); // consult mode
 					//Depends on the encoding !!
@@ -112,7 +102,7 @@ public class PacketManager implements Runnable
 				else
 					System.out.println(
 							"[PacketManager] Received from own address : "
-									+ packet.getAddress());
+									+ myIP);
 				/*
 				 * Debugging
 				 */

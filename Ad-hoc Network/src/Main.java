@@ -17,23 +17,9 @@ public class Main {
 
 	public static void main(String[] args) throws SocketException, UnknownHostException {
 
-		//new NetworkManager();
+		new NetworkManager();
 
-		System.out.println(InetAddress.getLocalHost());
-		System.out.println(InetAddress.getLocalHost().getHostAddress());
-		System.out.println(InetAddress.getLocalHost().getHostName());
-		IP ip1 = new IP(InetAddress.getLocalHost());
-		IP ip2 = new IP(InetAddress.getLocalHost());
-		IP ip3 = new IP(InetAddress.getLocalHost());
-		HashSet<IP> set = new HashSet<IP>();
-		set.add(ip1);
-		System.out.println(ip1);
-		System.out.println(ip2);
-		System.out.println(ip1.hashCode());
-		System.out.println(ip2.hashCode());
-		System.out.println(ip1.equals(ip2));
-		System.out.println(set.contains(ip1));
-		System.out.println(set.contains(ip2));
+		
 
 	}
 }
