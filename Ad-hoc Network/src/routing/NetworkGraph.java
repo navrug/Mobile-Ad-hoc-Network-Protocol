@@ -5,50 +5,51 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import utilities.IP;
 import lsa.LSAMessage;
 import lsa.LSATable;
 
 public class NetworkGraph
 {
 	boolean[][] neighbor;
-	InetAddress[] addresses;
+	IP[] addresses;
 	int numberOfNodes;
-	Hashtable<InetAddress, HashSet<InetAddress>> graph;
+	Hashtable<IP, HashSet<IP>> graph;
 	
 	NetworkGraph(LSATable table)
 	{
-		graph = new Hashtable<InetAddress, HashSet<InetAddress>>();
+		graph = new Hashtable<IP, HashSet<IP>>();
 		numberOfNodes = table.numberOfNodes();
-		neighbor = new boolean[numberOfNodes][];
+		/*neighbor = new boolean[numberOfNodes][];
 		for (int i = 0; i<numberOfNodes; i++)
 			neighbor[i] = new boolean[numberOfNodes];
-		addresses = new InetAddress[numberOfNodes];
+		addresses = new IP[numberOfNodes];
 		int i = 0;
-		for (InetAddress address : table.addresses()) {
+		for (IP address : table.addresses()) {
 			addresses[i] = address;
 			i++;
-		}
+		}*/
 		for (LSAMessage message : table.messages()) {
-			for (InetAddress neighbor : message.neighbors())
+			for (IP neighbor : message.neighbors())
 				if (table.isConnectedTo(neighbor, message.source()))
 					addEdge(message.source(), neighbor);
 		}
 	}
 	
-	private void addEdge(InetAddress a, InetAddress b) {
+	private void addEdge(IP a, IP b) {
 		if (graph.containsKey(a))
 			graph.get(a).add(b);
 		else {
-			graph.put(a, new HashSet<InetAddress>());
+			graph.put(a, new HashSet<IP>());
 			graph.get(a).add(b);
 		}
 	}
-	public HashSet<InetAddress> neighbors(InetAddress a)
+	public HashSet<IP> neighbors(IP a)
 	{
 		return graph.get(a);
 	}
 	
-	public Set<InetAddress> nodes()
+	public Set<IP> nodes()
 	{
 		return graph.keySet();
 	}

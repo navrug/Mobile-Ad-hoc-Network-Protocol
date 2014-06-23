@@ -8,11 +8,12 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
+import utilities.IP;
 import lsa.LSATable;
 
 public class RoutingTable
 {
-	Hashtable<String, InetAddress> table;
+	Hashtable<IP, IP> table;
 	NetworkGraph graph;
 
 	public RoutingTable()
@@ -26,9 +27,9 @@ public class RoutingTable
 			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
 			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
 
-			for( String m : table.keySet())
+			for( IP m : table.keySet())
 			{
-				Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m).getHostAddress());
+				Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -38,11 +39,11 @@ public class RoutingTable
 	public void updateGraph(LSATable lsaTable)
 	{
 		graph = new NetworkGraph(lsaTable);
-		table = new Hashtable<String, InetAddress>();
-		HashSet<InetAddress> inserted = new HashSet<InetAddress>();
-		LinkedList<InetAddress> queue = new LinkedList<InetAddress>();
+		table = new Hashtable<IP, IP>();
+		HashSet<IP> inserted = new HashSet<IP>();
+		LinkedList<IP> queue = new LinkedList<IP>();
 		try {
-			addNeighbors(InetAddress.getLocalHost(),
+			addNeighbors(new IP(InetAddress.getLocalHost()),
 					inserted,
 					queue);
 		} catch (UnknownHostException e) {
@@ -54,14 +55,14 @@ public class RoutingTable
 					queue);
 	}
 
-	private void addNeighbors(InetAddress a,
-			HashSet<InetAddress> inserted,
-			LinkedList<InetAddress> queue)
+	private void addNeighbors(IP a,
+			HashSet<IP> inserted,
+			LinkedList<IP> queue)
 	{
-		for (InetAddress b : graph.neighbors(a))
+		for (IP b : graph.neighbors(a))
 			if (!inserted.contains(b)) {
 				inserted.add(b);
-				table.put(b.getHostAddress(), a);
+				table.put(b, a);
 				queue.add(b);
 			}
 	}

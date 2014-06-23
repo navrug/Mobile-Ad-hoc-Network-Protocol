@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 
+import utilities.IP;
 import lsa.LSAMessage;
 import lsa.LSATable;
 
@@ -59,18 +60,13 @@ public class MessageThread implements Runnable
 			message.get();
 			message.get();
 			message.get();
-			InetAddress sourceAddress = null;
+			IP sourceAddress = null;
 			byte[] byteAddress = new byte[4];
 			//Getting source address
 			for (int j = 0; j<4; j++) {
 				byteAddress[j] = message.get();
 			}
-			try {
-				sourceAddress =
-						InetAddress.getByAddress(byteAddress);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
+			sourceAddress = new IP(byteAddress);
 			switch (type) {
 			case helloType:
 				HelloMessage hello = new HelloMessage(adaptBuffer(message));

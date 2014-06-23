@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import utilities.IP;
 import listener.MessageThread;
 import lsa.LSAMessage;
 import lsa.LSATable;
@@ -97,7 +98,7 @@ public class PacketManager implements Runnable
 					//Depends on the encoding !!
 					if (buffer.array()[0]==MessageThread.lsaType
 							&& lsaTable.isLatest(
-									packet.getAddress(), 
+									new IP(packet.getAddress()), 
 									buffer)) {
 						System.out.println(
 								"[PacketManager] LSA forwarded.");

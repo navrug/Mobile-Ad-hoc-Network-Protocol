@@ -6,25 +6,26 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+import utilities.IP;
 import listener.MessageThread;
 import exceptions.WrongMessageType;
 
 public class HelloMessage
 {
-	private InetAddress sourceAddress;
-	private LinkedList<InetAddress> heardNeighbors;
+	private IP sourceAddress;
+	private LinkedList<IP> heardNeighbors;
 	private int numberOfHeard;
-	private LinkedList<InetAddress> symmetricNeighbors;
+	private LinkedList<IP> symmetricNeighbors;
 	private int numberOfSymmetric;
 
 
-	public HelloMessage(InetAddress myAddress)
+	public HelloMessage(IP myAddress)
 	{
 		sourceAddress = myAddress;
 		numberOfHeard = 0;
-		heardNeighbors = new LinkedList<InetAddress>();
+		heardNeighbors = new LinkedList<IP>();
 		numberOfSymmetric = 0;
-		symmetricNeighbors = new LinkedList<InetAddress>();
+		symmetricNeighbors = new LinkedList<IP>();
 	}
 
 
@@ -42,45 +43,30 @@ public class HelloMessage
 			for (int j = 0; j<4; j++) {
 				byteAddress[j] = message.get();
 			}
-			try {
-				sourceAddress =
-						InetAddress.getByAddress(byteAddress);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
+			sourceAddress =	new IP(byteAddress);
 			//Heard neighbors listing
 			numberOfHeard = message.get();
 			message.get();
 			message.get();
 			message.get();
-			heardNeighbors = new LinkedList<InetAddress>();
+			heardNeighbors = new LinkedList<IP>();
 			for (int i = 0; i<numberOfHeard; i++) {
 				for (int j = 0; j<4; j++) {
 					byteAddress[j] = message.get();
 				}
-				try {
-					heardNeighbors.add(
-							InetAddress.getByAddress(byteAddress));
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
+				heardNeighbors.add(new IP(byteAddress));
 			}
 			//Symmetric neighbors listing
 			numberOfSymmetric = message.get();
 			message.get();
 			message.get();
 			message.get();
-			symmetricNeighbors = new LinkedList<InetAddress>();
+			symmetricNeighbors = new LinkedList<IP>();
 			for (int i = 0; i<numberOfSymmetric; i++) {
 				for (int j = 0; j<4; j++) {
 					byteAddress[j] = message.get();
 				}
-				try {
-					symmetricNeighbors.add(
-							InetAddress.getByAddress(byteAddress));
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
+				symmetricNeighbors.add(new IP(byteAddress));
 			}
 		}
 		else throw new WrongMessageType();
@@ -98,13 +84,13 @@ public class HelloMessage
 		System.out.println("From : "+sourceAddress);
 		System.out.print("#  ");
 		System.out.println(numberOfHeard+" heard neighbors");
-		for (InetAddress neighbor : heardNeighbors) {
+		for (IP neighbor : heardNeighbors) {
 			System.out.print("#  ");
 			System.out.println(neighbor);
 		}
 		System.out.print("#  ");
 		System.out.println(numberOfSymmetric+" symmetric neighbors");
-		for (InetAddress neighbor : symmetricNeighbors) {
+		for (IP neighbor : symmetricNeighbors) {
 			System.out.print("#  ");
 			System.out.println(neighbor);
 		}
@@ -130,20 +116,20 @@ public class HelloMessage
 		buffer.put(MessageThread.helloType);
 		buffer.put((byte) 0);
 		buffer.putShort(bufferSize);
-		buffer.put(sourceAddress.getAddress());
+		buffer.put(sourceAddress.toBytes());
 		buffer.put((byte) numberOfHeard);
 		buffer.put((byte) 0);
 		buffer.put((byte) 0);
 		buffer.put((byte) 0);
-		for (InetAddress address : heardNeighbors) {
-			buffer.put(address.getAddress());
+		for (IP address : heardNeighbors) {
+			buffer.put(address.toBytes());
 		}
 		buffer.put((byte) numberOfSymmetric);
 		buffer.put((byte) 0);
 		buffer.put((byte) 0);
 		buffer.put((byte) 0);
-		for (InetAddress address : symmetricNeighbors) {
-			buffer.put(address.getAddress());
+		for (IP address : symmetricNeighbors) {
+			buffer.put(address.toBytes());
 		}
 		return buffer;
 	}
@@ -163,24 +149,24 @@ public class HelloMessage
 		return packet;
 	}
 
-	public void addHeard(InetAddress address)
+	public void addHeard(IP address)
 	{
 		numberOfHeard++;
 		heardNeighbors.add(address);
 	}
 
-	public void addSymmetric(InetAddress address)
+	public void addSymmetric(IP address)
 	{
 		numberOfSymmetric++;
 		symmetricNeighbors.add(address);
 	}
 
-	public boolean isSymmetric(InetAddress myAddress)
+	public boolean isSymmetric(IP myAddress)
 	{
-		for (InetAddress neighbor : heardNeighbors)
+		for (IP neighbor : heardNeighbors)
 			if (myAddress.equals(neighbor))
 				return true;
-		for (InetAddress neighbor : symmetricNeighbors)
+		for (IP neighbor : symmetricNeighbors)
 			if (myAddress.equals(neighbor))
 				return true;
 		return false;

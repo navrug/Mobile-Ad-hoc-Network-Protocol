@@ -4,20 +4,21 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
+import utilities.IP;
 import lsa.LSAMessage;
 
 public class HelloTable
 {
-	private Hashtable<InetAddress, HelloMessage> table;
+	private Hashtable<IP, HelloMessage> table;
 	private static short sequenceNumber = 0;
 
 	public HelloTable()
 	{
-		table = new Hashtable<InetAddress, HelloMessage>();
+		table = new Hashtable<IP, HelloMessage>();
 	}
 	
 	
-	public void addHello(InetAddress neighbor, HelloMessage message)
+	public void addHello(IP neighbor, HelloMessage message)
 	{
 		/*if (!message.equals(*/table.put(neighbor, message)/*))
 			sequenceNumber++*/;
@@ -25,14 +26,14 @@ public class HelloTable
 	
 	public HelloMessage createHello()
 	{
-		InetAddress myAddress = null;
+		IP myAddress = null;
 		try {
-			myAddress = InetAddress.getLocalHost();
+			myAddress = new IP(InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 		HelloMessage result = new HelloMessage(myAddress);
-		for (InetAddress neighbor : table.keySet())
+		for (IP neighbor : table.keySet())
 		{
 			if (table.get(neighbor).isSymmetric(myAddress))
 				result.addSymmetric(neighbor);
@@ -45,15 +46,15 @@ public class HelloTable
 	
 	public LSAMessage createLSA()
 	{
-		InetAddress myAddress = null;
+		IP myAddress = null;
 		try {
-			myAddress = InetAddress.getLocalHost();
+			myAddress = new IP(InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 		LSAMessage result = 
 				new LSAMessage(myAddress, sequenceNumber++);
-		for (InetAddress neighbor : table.keySet())
+		for (IP neighbor : table.keySet())
 		{
 			if (table.get(neighbor).isSymmetric(myAddress))
 				result.addNeighbor(neighbor);

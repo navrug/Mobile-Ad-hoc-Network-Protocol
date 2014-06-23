@@ -10,23 +10,24 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import routing.RoutingTable;
+import utilities.IP;
 
 
 public class LSATable{
-	private Hashtable<InetAddress, LSAMessage> table;
+	private Hashtable<IP, LSAMessage> table;
 	private final ReentrantLock lock;
 	private final Condition notUpdated;
 	private RoutingTable routingTable = new RoutingTable();
 
 	public LSATable(ReentrantLock lock, Condition notUpdated)
 	{
-		table = new Hashtable<InetAddress, LSAMessage>();
+		table = new Hashtable<IP, LSAMessage>();
 		this.lock = lock;
 		this.notUpdated = notUpdated;
 	}
 
 
-	public void addLSA(InetAddress neighbor, LSAMessage message)
+	public void addLSA(IP neighbor, LSAMessage message)
 	{
 		LSAMessage oldMessage = table.get(neighbor);
 		if (oldMessage == null || 
@@ -38,7 +39,7 @@ public class LSATable{
 	}
 
 	//Takes in  consulting mode, returns the same mode
-	public boolean isLatest(InetAddress address, ByteBuffer buffer)
+	public boolean isLatest(IP address, ByteBuffer buffer)
 	{
 		buffer.getDouble();//Avancer de 8 octets
 		LSAMessage latestInTable = table.get(address);
@@ -56,7 +57,7 @@ public class LSATable{
 		return table.size();
 	}
 
-	public Set<InetAddress> addresses()
+	public Set<IP> addresses()
 	{
 		return table.keySet();
 	}
@@ -66,7 +67,7 @@ public class LSATable{
 		return table.values();
 	}
 
-	public boolean isConnectedTo(InetAddress a, InetAddress b)
+	public boolean isConnectedTo(IP a, IP b)
 	{
 		return table.get(a).neighbors().contains(b);
 	}

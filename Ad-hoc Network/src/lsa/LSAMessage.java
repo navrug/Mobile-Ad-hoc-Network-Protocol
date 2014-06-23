@@ -6,14 +6,15 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+import utilities.IP;
 import listener.MessageThread;
 import exceptions.WrongMessageType;
 
 
 public class LSAMessage
 {
-	private InetAddress sourceAddress;
-	private LinkedList<InetAddress> neighborsAdresses;
+	private IP sourceAddress;
+	private LinkedList<IP> neighborsAdresses;
 	private short sequenceNumber;
 	private short numberOfNeighbors;
 	
@@ -30,33 +31,24 @@ public class LSAMessage
 		for (int j = 0; j<4; j++) {
 			byteAddress[j] = message.get();
 		}
-		try {
-			sourceAddress =
-					InetAddress.getByAddress(byteAddress);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+		sourceAddress = new IP(byteAddress);
 		sequenceNumber = message.getShort();
 		numberOfNeighbors = message.getShort();
-		neighborsAdresses = new LinkedList<InetAddress>();
+		neighborsAdresses = new LinkedList<IP>();
 		for (int i = 0; i < numberOfNeighbors ; i++) {
 			
 			for (int j = 0; j < 4; j++) {
 				byteAddress[j]=message.get();
 			}
-			try {
-				neighborsAdresses.add(InetAddress.getByAddress(byteAddress));
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
+			neighborsAdresses.add(new IP(byteAddress));
 		}
 	}
 	
-	public LSAMessage(InetAddress myAddress, short sequenceNumber)
+	public LSAMessage(IP myAddress, short sequenceNumber)
 	{
 		sourceAddress = myAddress;
 		numberOfNeighbors = 0;
-		neighborsAdresses = new LinkedList<InetAddress>();
+		neighborsAdresses = new LinkedList<IP>();
 		this.sequenceNumber = sequenceNumber;
 	}
 	
@@ -74,7 +66,7 @@ public class LSAMessage
 		System.out.print("Sequence number : "+sequenceNumber);
 		System.out.print("        ");
 		System.out.println(numberOfNeighbors+" neighbors");
-		for (InetAddress neighbor : neighborsAdresses) {
+		for (IP neighbor : neighborsAdresses) {
 			System.out.print("#  ");
 			System.out.println(neighbor);
 		}
@@ -93,11 +85,11 @@ public class LSAMessage
 		buffer.put(MessageThread.lsaType);
 		buffer.put((byte)0);
 		buffer.putShort(messageSize);
-		buffer.put(sourceAddress.getAddress());
+		buffer.put(sourceAddress.toBytes());
 		buffer.putShort(sequenceNumber);
 		buffer.putShort(numberOfNeighbors);
-		for (InetAddress address : neighborsAdresses)
-			buffer.put(address.getAddress());
+		for (IP address : neighborsAdresses)
+			buffer.put(address.toBytes());
 		return buffer;
 		
 	}
@@ -118,18 +110,18 @@ public class LSAMessage
 	}
 
 	
-	public void addNeighbor(InetAddress neighbor)
+	public void addNeighbor(IP neighbor)
 	{
 		numberOfNeighbors++;
 		neighborsAdresses.add(neighbor);
 	}
 
-	public LinkedList<InetAddress> neighbors()
+	public LinkedList<IP> neighbors()
 	{
 		return neighborsAdresses;
 	}
 	
-	public InetAddress source()
+	public IP source()
 	{
 		return sourceAddress;
 	}
