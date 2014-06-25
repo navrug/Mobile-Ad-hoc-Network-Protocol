@@ -31,7 +31,8 @@ public class RoutingThread implements Runnable
 	}
 
 	public void run()
-	{		
+	{	
+		
 		lock.lock();
 		try {
 			while (true) {

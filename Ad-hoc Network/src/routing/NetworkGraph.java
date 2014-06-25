@@ -1,6 +1,5 @@
 package routing;
 
-import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
