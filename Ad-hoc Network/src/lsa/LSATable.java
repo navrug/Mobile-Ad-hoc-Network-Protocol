@@ -69,6 +69,6 @@ public class LSATable{
 
 	public boolean isConnectedTo(IP a, IP b)
 	{
-		return table.get(a).neighbors().contains(b);
+		return (table.get(a)==null)&&table.get(a).neighbors().contains(b);
 	}
 }

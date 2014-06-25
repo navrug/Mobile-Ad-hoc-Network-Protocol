@@ -79,7 +79,7 @@ public class PacketManager implements Runnable
 				if (!myIP.equals(new IP(packet.getAddress()))) {
 					System.out.println(
 							"[PacketManager] Packet received from "
-									+packet.getAddress());
+									+packet.getAddress().getHostAddress());
 					numberOfPackets++;
 					buffer = ByteBuffer.allocate(
 							packet.getData().length);
