@@ -59,12 +59,13 @@ public class RoutingTable
 			HashSet<IP> inserted,
 			LinkedList<IP> queue)
 	{
-		for (IP b : graph.neighbors(a))
-			if (!inserted.contains(b)) {
-				inserted.add(b);
-				table.put(b, a);
-				queue.add(b);
-			}
+		if (graph.neighbors(a)!=null)
+			for (IP b : graph.neighbors(a))
+				if (!inserted.contains(b)) {
+					inserted.add(b);
+					table.put(b, a);
+					queue.add(b);
+				}
 	}
 
 }
