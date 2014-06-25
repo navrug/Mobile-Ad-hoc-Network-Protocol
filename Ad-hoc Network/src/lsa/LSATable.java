@@ -25,8 +25,7 @@ public class LSATable{
 		this.lock = lock;
 		this.notUpdated = notUpdated;
 	}
-
-
+	
 	public void addLSA(IP neighbor, LSAMessage message)
 	{
 		LSAMessage oldMessage = table.get(neighbor);
@@ -37,7 +36,7 @@ public class LSATable{
 			notUpdated.signal();
 		}
 	}
-
+	
 	//Takes in  consulting mode, returns the same mode
 	public boolean isLatest(IP address, ByteBuffer buffer)
 	{
