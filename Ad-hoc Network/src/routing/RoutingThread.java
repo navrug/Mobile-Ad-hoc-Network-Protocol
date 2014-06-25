@@ -18,6 +18,8 @@ public class RoutingThread implements Runnable
 			ReentrantLock lock,
 			Condition notUpdated)
 	{
+
+		table=new RoutingTable();
 		this.lsaTable = lsaTable;
 		this.lock = lock;
 		this.notUpdated = notUpdated;
