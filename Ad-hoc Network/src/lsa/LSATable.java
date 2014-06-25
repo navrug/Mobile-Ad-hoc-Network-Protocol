@@ -34,7 +34,7 @@ public class LSATable{
 				oldMessage.sequenceNumber() < message.sequenceNumber()) {
 			table.put(neighbor, message);
 			routingTable.updateGraph(this);
-			//notUpdated.signal();
+			notUpdated.signal();
 		}
 	}
 

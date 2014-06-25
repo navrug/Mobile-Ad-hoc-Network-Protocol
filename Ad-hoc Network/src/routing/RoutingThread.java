@@ -37,6 +37,7 @@ public class RoutingThread implements Runnable
 			while (true) {
 				notUpdated.await();
 				table.updateGraph(lsaTable); 
+				table.writeTable();
 			} 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
