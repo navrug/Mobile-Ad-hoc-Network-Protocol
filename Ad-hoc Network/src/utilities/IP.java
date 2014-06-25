@@ -12,7 +12,8 @@ public class IP {
 		for (int i = 0; i<4; i++)
 			this.bytes[i] = bytes[i];
 	}
-	IP(byte a, byte b, byte c, byte d)
+	
+	public IP(byte a, byte b, byte c, byte d)
 	{
 		bytes[0] = a;
 		bytes[1] = b;
@@ -20,7 +21,7 @@ public class IP {
 		bytes[3] = d;	
 	}
 	
-	IP(int a, int b, int c, int d)
+	public IP(int a, int b, int c, int d)
 	{
 		bytes[0] =(byte) a;
 		bytes[1] =(byte) b;
