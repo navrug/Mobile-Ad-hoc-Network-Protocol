@@ -19,6 +19,14 @@ public class IP {
 		bytes[2] = c;
 		bytes[3] = d;	
 	}
+	
+	IP(int a, int b, int c, int d)
+	{
+		bytes[0] =(byte) a;
+		bytes[1] =(byte) b;
+		bytes[2] =(byte) c;
+		bytes[3] =(byte) d;	
+	}
 
 	public IP(InetAddress address)
 	{
