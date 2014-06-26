@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
 import listener.MessageThread;
@@ -25,6 +27,7 @@ public class PacketManager implements Runnable
 	private BlockingQueue<ByteBuffer> queue;
 	private static int helloPeriod = 2000;
 	private static int deviationRange = 100;
+	private static Lock lock= new ReentrantLock();
 
 	PacketManager(HelloTable helloTable,
 			LSATable lsaTable)
@@ -44,7 +47,7 @@ public class PacketManager implements Runnable
 
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
-	{
+			{
 		IP myIP = new IP(InetAddress.getLocalHost());
 		long ti = System.currentTimeMillis();
 		long t = ti;
@@ -59,7 +62,14 @@ public class PacketManager implements Runnable
 		System.out.println(
 				"[PacketManager] Listening for "
 						+timeout+" ms...");
-		socket.setSoTimeout(timeout);
+		lock.lock();
+		try {
+			socket.setSoTimeout(timeout);
+		}
+		finally {
+			lock.unlock();
+		}
+
 		DatagramPacket packet = 
 				new DatagramPacket(listeningBuffer,
 						listeningBuffer.length);		
@@ -67,52 +77,70 @@ public class PacketManager implements Runnable
 		int numberOfPackets = 0;
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
-				socket.receive(packet);
+				lock.lock();
+				try {
+					socket.receive(packet);
+				}
+				finally {
+					lock.unlock();
+				}
 				/*
 				 * Debugging
 				 */
 				if (!blacklist.contains(new IP(packet.getAddress()))) {
-				/*
-				 * Debugging
-				 */
-				
-				if (!myIP.equals(new IP(packet.getAddress()))) {
-					System.out.println(
-							"[PacketManager] Packet received from "
-									+packet.getAddress().getHostAddress());
-					numberOfPackets++;
-					buffer = ByteBuffer.allocate(
-							packet.getData().length);
-					buffer.put(packet.getData());
-					buffer.flip(); // consult mode
-					//Depends on the encoding !!
-					if (buffer.array()[0]==MessageThread.lsaType
-							&& lsaTable.isLatest(
-									new IP(packet.getAddress()), 
-									buffer)) {
-						System.out.println(
-								"[PacketManager] LSA forwarded.");
-						socket.send(packet);
-					}
-					queue.add(buffer);
-					//System.out.println(
-					//"[PacketManager] Buffer added to the queue.");
+					/*
+					 * Debugging
+					 */
 
+					if (!myIP.equals(new IP(packet.getAddress()))) {
+						System.out.println(
+								"[PacketManager] Packet received from "
+										+packet.getAddress().getHostAddress());
+						numberOfPackets++;
+						buffer = ByteBuffer.allocate(
+								packet.getData().length);
+						buffer.put(packet.getData());
+						buffer.flip(); // consult mode
+						//Depends on the encoding !!
+						if (buffer.array()[0]==MessageThread.lsaType
+								&& lsaTable.isLatest(
+										new IP(packet.getAddress()), 
+										buffer)) {
+							lock.lock();
+							try {
+								System.out.println(
+										"[PacketManager] LSA forwarded.");
+								socket.send(packet);
+							}
+							finally {
+								lock.unlock();
+							}
+						}
+						queue.add(buffer);
+						//System.out.println(
+						//"[PacketManager] Buffer added to the queue.");
+
+					}
+					else
+						System.out.println(
+								"[PacketManager] Received from own address : "
+										+ myIP);
+					/*
+					 * Debugging
+					 */
 				}
-				else
-					System.out.println(
-							"[PacketManager] Received from own address : "
-									+ myIP);
 				/*
 				 * Debugging
 				 */
-			}
-				/*
-				 * Debugging
-				 */
-				
+
 				t = System.currentTimeMillis();
-				socket.setSoTimeout((int)(timeout-(t-ti)));
+				lock.lock();
+				try {
+					socket.setSoTimeout((int)(timeout-(t-ti)));
+				}
+				finally {
+					lock.unlock();
+				}
 			}
 		}
 		catch (SocketTimeoutException e) {
@@ -122,7 +150,7 @@ public class PacketManager implements Runnable
 				"[PacketManager] Received "
 						+numberOfPackets
 						+" packets in "+timeout+" ms.");
-	}
+			}
 
 	public void run() {
 		Random r = new Random(System.currentTimeMillis());
@@ -145,20 +173,43 @@ public class PacketManager implements Runnable
 			 */
 			while (true) {
 				hello = helloTable.createHello();
-				socket.send(hello.toPacket());
+				lock.lock();
+				try {
+					socket.send(hello.toPacket());
+				}
+				finally {
+					lock.unlock();
+				}
+
 				System.out.println("[PacketManager] Hello sent.");
 				listen(listenData, helloPeriod 
 						+ r.nextInt(2*deviationRange)-deviationRange);
 				hello = helloTable.createHello();
-				socket.send(hello.toPacket());
+
+				lock.lock();
+				try {
+					socket.send(hello.toPacket());
+				}
+				finally {
+					lock.unlock();
+				}
+
 				System.out.println("[PacketManager] Hello sent.");
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
-				lsa = helloTable.createLSA();
-				socket.send(lsa.toPacket());
+				lsa = helloTable.createLSA();		
+				lock.lock();
+				try {
+					socket.send(lsa.toPacket());
+				}
+				finally {
+					lock.unlock();
+				}
+
 				System.out.println("[PacketManager] LSA #"+lsa.sequenceNumber()+" sent.");
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
+
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

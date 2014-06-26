@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
 
 import utilities.IP;
 import lsa.LSATable;
@@ -16,6 +17,7 @@ public class RoutingTable
 	Hashtable<IP, IP> table;
 	NetworkGraph graph;
 	IP ownAddress;
+	Lock lock;
 
 	public RoutingTable()
 	{
@@ -34,9 +36,6 @@ public class RoutingTable
 			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
 			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
 			Runtime.getRuntime().exec("ip route add to default via 192.168.181.131");
-			
-			System.out.println("[RountingThread] azzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-			
 			for( IP m : table.keySet())
 			{
 				Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
