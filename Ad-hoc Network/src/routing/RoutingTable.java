@@ -14,10 +14,10 @@ import lsa.LSATable;
 
 public class RoutingTable
 {
-	Hashtable<IP, IP> table;
-	NetworkGraph graph;
-	IP ownAddress;
-	Lock lock;
+	private Hashtable<IP, IP> table;
+	private NetworkGraph graph;
+	private IP ownAddress;
+	private  Lock lock;
 
 	public RoutingTable(Lock lock)
 	{

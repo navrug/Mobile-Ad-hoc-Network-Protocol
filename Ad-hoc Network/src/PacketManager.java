@@ -39,6 +39,7 @@ public class PacketManager implements Runnable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		lock.lock();
 		try {
 			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
 			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
@@ -48,8 +49,9 @@ public class PacketManager implements Runnable
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
+		} finally {
+			lock.unlock();
 		}
-
 	}
 
 
@@ -145,6 +147,7 @@ public class PacketManager implements Runnable
 				lock.lock();
 				try {
 					socket.setSoTimeout((int)(timeout-(t-ti)));
+					if ((int) (timeout-(t-ti))<0) System.out.println("############ Timeout : " + (int) (timeout-(t-ti)));
 				}
 				finally {
 					lock.unlock();
