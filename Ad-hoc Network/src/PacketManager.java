@@ -21,19 +21,16 @@ import lsa.LSATable;
 
 public class PacketManager implements Runnable 
 {
-	private HelloTable helloTable;
-	private LSATable lsaTable;
+	private HelloTable helloTable = new HelloTable();
+	private static Lock lock = new ReentrantLock();
+	private LSATable lsaTable = new LSATable(lock);
 	private DatagramSocket socket;
 	private BlockingQueue<ByteBuffer> queue;
 	private static int helloPeriod = 2000;
 	private static int deviationRange = 100;
-	private static Lock lock= new ReentrantLock();
 
-	PacketManager(HelloTable helloTable,
-			LSATable lsaTable)
-			{
-		this.helloTable = helloTable;
-		this.lsaTable = lsaTable;
+	PacketManager()
+	{
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
 			socket = new DatagramSocket(1234,
@@ -42,7 +39,7 @@ public class PacketManager implements Runnable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-			}
+	}
 
 
 	private void listen(byte[] listeningBuffer, int timeout) 

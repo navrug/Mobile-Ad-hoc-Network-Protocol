@@ -11,16 +11,14 @@ import lsa.LSATable;
  */
 public class NetworkManager
 {
-	private HelloTable helloTable;
-	private LSATable lsaTable;
+
 	
 	NetworkManager()
 	{
-		helloTable = new HelloTable();
-		lsaTable = new LSATable();
+
 		
 		Thread channel = new Thread(
-				new PacketManager(helloTable, lsaTable),
+				new PacketManager(),
 				"PacketManager");
 		channel.start();
 		System.out.println("[NetworkManager] PacketManager launched.");

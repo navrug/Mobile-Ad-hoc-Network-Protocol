@@ -19,8 +19,9 @@ public class RoutingTable
 	IP ownAddress;
 	Lock lock;
 
-	public RoutingTable()
+	public RoutingTable(Lock lock)
 	{
+		this.lock=lock;
 		try {
 			ownAddress = new IP(InetAddress.getLocalHost());
 			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
@@ -32,10 +33,16 @@ public class RoutingTable
 	public void writeTable()
 	{
 		try {
+			lock.lock();
+			try {
 			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
 			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
 			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
 			Runtime.getRuntime().exec("ip route add to default via 192.168.181.131");
+			}
+			finally {
+				lock.unlock();
+			}
 			for( IP m : table.keySet())
 			{
 				Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
