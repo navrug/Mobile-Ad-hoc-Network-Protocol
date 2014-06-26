@@ -144,10 +144,10 @@ public class PacketManager implements Runnable
 				 */
 
 				t = System.currentTimeMillis();
+				if ((int) (timeout-(t-ti))<0) System.out.println("############ Timeout : " + (int) (timeout-(t-ti)));
 				lock.lock();
 				try {
 					socket.setSoTimeout((int)(timeout-(t-ti)));
-					if ((int) (timeout-(t-ti))<0) System.out.println("############ Timeout : " + (int) (timeout-(t-ti)));
 				}
 				finally {
 					lock.unlock();
