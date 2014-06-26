@@ -15,10 +15,12 @@ public class RoutingTable
 {
 	Hashtable<IP, IP> table;
 	NetworkGraph graph;
+	IP ownAddress;
 
 	public RoutingTable()
 	{
 		try {
+			ownAddress = new IP(InetAddress.getLocalHost());
 			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -72,7 +74,8 @@ public class RoutingTable
 			for (IP b : graph.neighbors(a))
 				if (!inserted.contains(b)) {
 					inserted.add(b);
-					table.put(b, a);
+					if (!ownAddress.equals(a))
+						table.put(b, a);
 					queue.add(b);
 				}
 	}
