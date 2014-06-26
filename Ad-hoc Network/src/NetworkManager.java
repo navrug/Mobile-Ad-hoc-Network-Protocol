@@ -1,6 +1,5 @@
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import routing.RoutingThread;
 import hello.HelloTable;
 import lsa.LSATable;
 
@@ -23,10 +22,5 @@ public class NetworkManager
 				"PacketManager");
 		channel.start();
 		System.out.println("[NetworkManager] PacketManager launched.");
-		Thread routing = new Thread(
-				new RoutingThread(lsaTable),
-				"Routing");
-		System.out.println("[NetworkManager] RoutingThread launched.");
-		routing.start();
 	}
 }

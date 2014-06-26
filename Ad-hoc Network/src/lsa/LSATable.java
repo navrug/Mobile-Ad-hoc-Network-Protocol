@@ -11,12 +11,11 @@ import utilities.IP;
 
 
 public class LSATable{
-	private Hashtable<IP, LSAMessage> table;
+	private Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();;
 	private RoutingTable routingTable = new RoutingTable();
 
 	public LSATable()
 	{
-		table = new Hashtable<IP, LSAMessage>();
 	}
 	
 	public void addLSA(IP neighbor, LSAMessage message)
