@@ -11,12 +11,8 @@ import lsa.LSATable;
  */
 public class NetworkManager
 {
-
-	
 	NetworkManager()
 	{
-
-		
 		Thread channel = new Thread(
 				new PacketManager(),
 				"PacketManager");

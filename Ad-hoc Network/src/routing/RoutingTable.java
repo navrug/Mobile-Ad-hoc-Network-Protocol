@@ -34,10 +34,11 @@ public class RoutingTable
 		try {
 			lock.lock();
 			try {
+				System.out.println("[RountingThread] Reconfiguration ip");
 				Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
 				Runtime.getRuntime().exec("ip route flush dev " + "eth0");
 				Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
-				Runtime.getRuntime().exec("ip route add to default via 192.168.181.131");
+				Runtime.getRuntime().exec("ip route add to default via " + InetAddress.getLocalHost().getHostAddress());
 
 				for( IP m : table.keySet())
 				{
