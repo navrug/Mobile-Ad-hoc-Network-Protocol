@@ -39,6 +39,17 @@ public class PacketManager implements Runnable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		try {
+			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
+			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
+			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
+			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
+			Runtime.getRuntime().exec("ip route add to default via 192.168.181.131");
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
 	}
 
 

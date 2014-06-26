@@ -24,7 +24,6 @@ public class RoutingTable
 		this.lock=lock;
 		try {
 			ownAddress = new IP(InetAddress.getLocalHost());
-			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
