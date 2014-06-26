@@ -14,15 +14,11 @@ public class RoutingThread implements Runnable
 	ReentrantLock lock;
 	Condition notUpdated;
 
-	public RoutingThread(LSATable lsaTable,
-			ReentrantLock lock,
-			Condition notUpdated)
+	public RoutingThread(LSATable lsaTable)
 	{
 
 		table=new RoutingTable();
 		this.lsaTable = lsaTable;
-		this.lock = lock;
-		this.notUpdated = notUpdated;
 		
 		try {
 		Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");

@@ -1,13 +1,10 @@
 package lsa;
 
 
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import routing.RoutingTable;
 import utilities.IP;
@@ -15,15 +12,11 @@ import utilities.IP;
 
 public class LSATable{
 	private Hashtable<IP, LSAMessage> table;
-	private final ReentrantLock lock;
-	private final Condition notUpdated;
 	private RoutingTable routingTable = new RoutingTable();
 
-	public LSATable(ReentrantLock lock, Condition notUpdated)
+	public LSATable()
 	{
 		table = new Hashtable<IP, LSAMessage>();
-		this.lock = lock;
-		this.notUpdated = notUpdated;
 	}
 	
 	public void addLSA(IP neighbor, LSAMessage message)
@@ -33,12 +26,7 @@ public class LSATable{
 				oldMessage.sequenceNumber() < message.sequenceNumber()) {
 			table.put(neighbor, message);
 			routingTable.updateGraph(this);
-			lock.lock();
-			try {
-					notUpdated.signal();
-			} finally {
-				lock.unlock();
-			}
+			routingTable.writeTable();
 		}
 	}
 	

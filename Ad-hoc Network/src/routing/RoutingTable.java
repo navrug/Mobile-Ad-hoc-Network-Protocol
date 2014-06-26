@@ -18,6 +18,11 @@ public class RoutingTable
 
 	public RoutingTable()
 	{
+		try {
+			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	public void writeTable()

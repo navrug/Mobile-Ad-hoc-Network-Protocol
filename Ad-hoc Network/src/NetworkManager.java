@@ -15,11 +15,8 @@ public class NetworkManager
 	
 	NetworkManager()
 	{
-		final ReentrantLock lock = new ReentrantLock();
-		final Condition notUpdated  = lock.newCondition();
-		
 		helloTable = new HelloTable();
-		lsaTable = new LSATable(lock, notUpdated);
+		lsaTable = new LSATable();
 		
 		Thread channel = new Thread(
 				new PacketManager(helloTable, lsaTable),
@@ -27,7 +24,7 @@ public class NetworkManager
 		channel.start();
 		System.out.println("[NetworkManager] PacketManager launched.");
 		Thread routing = new Thread(
-				new RoutingThread(lsaTable, lock, notUpdated),
+				new RoutingThread(lsaTable),
 				"Routing");
 		System.out.println("[NetworkManager] RoutingThread launched.");
 		routing.start();
