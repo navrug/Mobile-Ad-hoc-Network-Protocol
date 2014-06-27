@@ -37,12 +37,12 @@ public class RoutingTable implements IDrawable
 		try {
 
 			System.out.println("[RountingThread] Reconfiguration ip");
-			SystemCommand.cmdExecPrint("ip addr flush dev " + "eth0");
-			SystemCommand.cmdExecPrint("ip route flush dev " + "eth0");
-			SystemCommand.cmdExecPrint("ip addr add " + IP.myIP() + "/16 dev " + "eth0" + " brd +");
-			SystemCommand.cmdExecPrint("ip route add to default via " + IP.myIP());
+			SystemCommand.cmdExec("ip addr flush dev " + "eth0");
+			SystemCommand.cmdExec("ip route flush dev " + "eth0");
+			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/16 dev " + "eth0" + " brd +");
+			SystemCommand.cmdExec("ip route add to default via " + IP.myIP());
 			for (IP m : table.keySet()) {
-				SystemCommand.cmdExecPrint("ip route add to " + m + "/32 via " + table.get(m));
+				SystemCommand.cmdExec("ip route add to " + m + "/32 via " + table.get(m));
 				System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
 			}
 		}

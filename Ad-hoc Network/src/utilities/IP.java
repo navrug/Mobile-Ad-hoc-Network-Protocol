@@ -1,5 +1,6 @@
 package utilities;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Random;
 
 
@@ -11,6 +12,17 @@ public class IP {
 	{
 		Random r = new Random(System.currentTimeMillis());
 		myIP = new IP(1, 1, r.nextInt(), r.nextInt());
+		return myIP;
+	}
+	
+	public static IP defineIPFromHosts()
+	{
+		try {
+			myIP = new IP(InetAddress.getLocalHost());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return myIP;
 	}
 	

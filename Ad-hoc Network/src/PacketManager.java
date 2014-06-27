@@ -13,6 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
+import utilities.SystemCommand;
 import listener.MessageThread;
 import lsa.LSAMessage;
 import lsa.LSATable;
@@ -41,13 +42,19 @@ public class PacketManager implements Runnable
 		}
 		netlock.lock();
 		try {
-			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
-			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
-			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
-			Runtime.getRuntime().exec("ip addr add " + IP.myIP()  + "/16 dev " + "eth0" + " brd +");
-			Runtime.getRuntime().exec("ip route add to default via " + IP.myIP());
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			System.out.println("[PacketManaer] Attribution d'un adresse ip");
+			
+			
+			
+			
+			
+			SystemCommand.cmdExec("ip addr flush dev " + "eth0");
+			SystemCommand.cmdExec("ip route flush dev " + "eth0");
+			
+			
+			
+			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/16 dev " + "eth0" + " brd +");
+			SystemCommand.cmdExec("ip route add to default via " + IP.myIP());
 		} finally {
 			netlock.unlock();
 		}
