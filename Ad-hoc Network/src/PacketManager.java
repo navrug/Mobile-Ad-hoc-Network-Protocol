@@ -31,7 +31,8 @@ public class PacketManager implements Runnable
 
 	PacketManager()
 	{
-		IP.defineIP();
+		//IP.defineIP();
+		IP.defineIPFromHost();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
 			socket = new DatagramSocket(1234,
