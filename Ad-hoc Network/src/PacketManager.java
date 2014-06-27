@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
 import listener.MessageThread;
@@ -19,18 +21,16 @@ import lsa.LSATable;
 
 public class PacketManager implements Runnable 
 {
-	private HelloTable helloTable;
-	private LSATable lsaTable;
+	private HelloTable helloTable = new HelloTable();
+	private static Lock lock = new ReentrantLock();
+	private LSATable lsaTable = new LSATable(lock);
 	private DatagramSocket socket;
 	private BlockingQueue<ByteBuffer> queue;
 	private static int helloPeriod = 2000;
 	private static int deviationRange = 100;
 
-	PacketManager(HelloTable helloTable,
-			LSATable lsaTable)
-			{
-		this.helloTable = helloTable;
-		this.lsaTable = lsaTable;
+	PacketManager()
+	{
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
 			socket = new DatagramSocket(1234,
@@ -39,7 +39,19 @@ public class PacketManager implements Runnable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-			}
+		lock.lock();
+		try {
+			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
+			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
+			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
+			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
+			Runtime.getRuntime().exec("ip route add to default via " + InetAddress.getLocalHost().getHostAddress());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} finally {
+			lock.unlock();
+		}
+	}
 
 
 	private void listen(byte[] listeningBuffer, int timeout) 
@@ -59,7 +71,14 @@ public class PacketManager implements Runnable
 		System.out.println(
 				"[PacketManager] Listening for "
 						+timeout+" ms...");
-		socket.setSoTimeout(timeout);
+		lock.lock();
+		try {
+			socket.setSoTimeout(timeout);
+		}
+		finally {
+			lock.unlock();
+		}
+
 		DatagramPacket packet = 
 				new DatagramPacket(listeningBuffer,
 						listeningBuffer.length);		
@@ -67,55 +86,75 @@ public class PacketManager implements Runnable
 		int numberOfPackets = 0;
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
-				socket.receive(packet);
+				lock.lock();
+				try {
+					socket.receive(packet);
+				}
+				finally {
+					lock.unlock();
+				}
 				/*
 				 * Debugging
 				 */
 				if (!blacklist.contains(new IP(packet.getAddress()))) {
+					/*
+					 * Debugging
+					 */
+
+					if (!myIP.equals(new IP(packet.getAddress()))) {
+						System.out.println(
+								"[PacketManager] Packet received from "
+										+packet.getAddress().getHostAddress());
+						numberOfPackets++;
+						buffer = ByteBuffer.allocate(
+								packet.getData().length);
+						buffer.put(packet.getData());
+						buffer.flip(); // consult mode
+						//Depends on the encoding !!
+						if (buffer.array()[0]==MessageThread.lsaType
+								&& lsaTable.isLatest(
+										new IP(packet.getAddress()), 
+										buffer)) {
+							lock.lock();
+							try {
+								System.out.println(
+										"[PacketManager] LSA forwarded.");
+								socket.send(packet);
+							}
+							finally {
+								lock.unlock();
+							}
+						}
+						queue.add(buffer);
+						//System.out.println(
+						//"[PacketManager] Buffer added to the queue.");
+
+					}
+					else
+						System.out.println(
+								"[PacketManager] Received from own address : "
+										+ myIP);
+					/*
+					 * Debugging
+					 */
+				}
 				/*
 				 * Debugging
 				 */
-				
-				if (!myIP.equals(new IP(packet.getAddress()))) {
-					System.out.println(
-							"[PacketManager] Packet received from "
-									+packet.getAddress().getHostAddress());
-					numberOfPackets++;
-					buffer = ByteBuffer.allocate(
-							packet.getData().length);
-					buffer.put(packet.getData());
-					buffer.flip(); // consult mode
-					//Depends on the encoding !!
-					if (buffer.array()[0]==MessageThread.lsaType
-							&& lsaTable.isLatest(
-									new IP(packet.getAddress()), 
-									buffer)) {
-						System.out.println(
-								"[PacketManager] LSA forwarded.");
-						socket.send(packet);
-					}
-					queue.add(buffer);
-					//System.out.println(
-					//"[PacketManager] Buffer added to the queue.");
 
+				t = System.currentTimeMillis();
+				if (timeout-(t-ti)>10) {
+					lock.lock();
+					try {
+						socket.setSoTimeout((int)(timeout-(t-ti)));
+					}
+					finally {
+						lock.unlock();
+					}	
 				}
 				else
-					System.out.println(
-							"[PacketManager] Received from own address : "
-									+ myIP);
-				/*
-				 * Debugging
-				 */
-			}
-				/*
-				 * Debugging
-				 */
-				
-				t = System.currentTimeMillis();
-				if (timeout-(t-ti)>10)
-					socket.setSoTimeout((int)(timeout-(t-ti)));
-				else
 					timeout = -1;
+
 			}
 		}
 		catch (SocketTimeoutException e) {
@@ -148,20 +187,43 @@ public class PacketManager implements Runnable
 			 */
 			while (true) {
 				hello = helloTable.createHello();
-				socket.send(hello.toPacket());
+				lock.lock();
+				try {
+					socket.send(hello.toPacket());
+				}
+				finally {
+					lock.unlock();
+				}
+
 				System.out.println("[PacketManager] Hello sent.");
 				listen(listenData, helloPeriod 
 						+ r.nextInt(2*deviationRange)-deviationRange);
 				hello = helloTable.createHello();
-				socket.send(hello.toPacket());
+
+				lock.lock();
+				try {
+					socket.send(hello.toPacket());
+				}
+				finally {
+					lock.unlock();
+				}
+
 				System.out.println("[PacketManager] Hello sent.");
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
-				lsa = helloTable.createLSA();
-				socket.send(lsa.toPacket());
+				lsa = helloTable.createLSA();		
+				lock.lock();
+				try {
+					socket.send(lsa.toPacket());
+				}
+				finally {
+					lock.unlock();
+				}
+
 				System.out.println("[PacketManager] LSA #"+lsa.sequenceNumber()+" sent.");
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
+
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

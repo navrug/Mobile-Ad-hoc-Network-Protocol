@@ -13,22 +13,24 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
 
 import utilities.IP;
 import lsa.LSATable;
 
 public class RoutingTable
 {
-	Hashtable<IP, IP> table;
-	NetworkGraph graph;
-	IP ownAddress;
 	Printer printer;
+	private Hashtable<IP, IP> table;
+	private NetworkGraph graph;
+	private IP ownAddress;
+	private  Lock lock;
 
-	public RoutingTable()
+	public RoutingTable(Lock lock)
 	{
+		this.lock=lock;
 		try {
 			ownAddress = new IP(InetAddress.getLocalHost());
-			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -37,17 +39,22 @@ public class RoutingTable
 	public void writeTable()
 	{
 		try {
-			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
-			Runtime.getRuntime().exec("ip route flush dev " + "eth0");
-			Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
-			Runtime.getRuntime().exec("ip route add to default via 192.168.181.131");
-			
-			System.out.println("[RountingThread] azzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-			
-			for( IP m : table.keySet())
-			{
-				Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
-				System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
+			lock.lock();
+			try {
+				System.out.println("[RountingThread] Reconfiguration ip");
+				Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
+				Runtime.getRuntime().exec("ip route flush dev " + "eth0");
+				Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
+				Runtime.getRuntime().exec("ip route add to default via " + InetAddress.getLocalHost().getHostAddress());
+
+				for( IP m : table.keySet())
+				{
+					Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
+					System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
+				}
+			}
+			finally {
+				lock.unlock();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

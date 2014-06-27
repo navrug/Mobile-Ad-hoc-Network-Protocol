@@ -5,17 +5,19 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 
 import routing.RoutingTable;
 import utilities.IP;
 
 
 public class LSATable{
-	private Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();
-	private RoutingTable routingTable = new RoutingTable();
+	private Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();;
+	private RoutingTable routingTable;
 
-	public LSATable()
+	public LSATable(Lock lock)
 	{
+		routingTable = new RoutingTable(lock);
 	}
 	
 	/*
