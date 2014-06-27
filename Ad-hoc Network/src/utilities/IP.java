@@ -15,12 +15,11 @@ public class IP {
 		return myIP;
 	}
 	
-	public static IP defineIPFromHosts()
+	public static IP defineIPFromHost()
 	{
 		try {
 			myIP = new IP(InetAddress.getLocalHost());
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return myIP;
