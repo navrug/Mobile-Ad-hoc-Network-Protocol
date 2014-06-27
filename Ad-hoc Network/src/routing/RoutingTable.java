@@ -20,7 +20,7 @@ import lsa.LSATable;
 
 public class RoutingTable
 {
-	Printer printer;
+	//Printer printer;
 	private Hashtable<IP, IP> table;
 	private NetworkGraph graph;
 	private IP ownAddress;
@@ -76,7 +76,7 @@ public class RoutingTable
 			addNeighbors(queue.remove(),
 					inserted,
 					queue);
-		printer.refresh();
+		//printer.refresh();
 	}
 
 	private void addNeighbors(IP a,
