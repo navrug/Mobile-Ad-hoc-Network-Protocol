@@ -17,11 +17,9 @@ public class HelloTable
 		table = new Hashtable<IP, HelloMessage>();
 	}
 	
-	
 	public void addHello(IP neighbor, HelloMessage message)
 	{
-		/*if (!message.equals(*/table.put(neighbor, message)/*))
-			sequenceNumber++*/;
+		table.put(neighbor, message);
 	}
 	
 	public HelloMessage createHello()

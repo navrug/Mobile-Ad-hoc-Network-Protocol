@@ -60,13 +60,12 @@ public class MessageThread implements Runnable
 			message.get();
 			message.get();
 			message.get();
-			IP sourceAddress = null;
 			byte[] byteAddress = new byte[4];
 			//Getting source address
 			for (int j = 0; j<4; j++) {
 				byteAddress[j] = message.get();
 			}
-			sourceAddress = new IP(byteAddress);
+			IP sourceAddress = new IP(byteAddress);
 			switch (type) {
 			case helloType:
 				HelloMessage hello = new HelloMessage(adaptBuffer(message));
@@ -74,7 +73,6 @@ public class MessageThread implements Runnable
 				helloTable.addHello(sourceAddress, hello);
 				break;
 			case lsaType:
-				System.out.println("Found a LSA !!!!");
 				LSAMessage lsa = new LSAMessage(adaptBuffer(message));
 				lsa.display();
 				lsaTable.addLSA(sourceAddress, lsa);

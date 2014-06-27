@@ -1,5 +1,10 @@
 package routing;
 
+import graphics.IDrawable;
+import graphics.Printer;
+
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -7,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.Random;
 
 import utilities.IP;
 import lsa.LSATable;
@@ -16,6 +22,7 @@ public class RoutingTable
 	Hashtable<IP, IP> table;
 	NetworkGraph graph;
 	IP ownAddress;
+	Printer printer;
 
 	public RoutingTable()
 	{
@@ -64,6 +71,7 @@ public class RoutingTable
 			addNeighbors(queue.remove(),
 					inserted,
 					queue);
+		printer.refresh();
 	}
 
 	private void addNeighbors(IP a,
@@ -79,5 +87,6 @@ public class RoutingTable
 					queue.add(b);
 				}
 	}
-
+	
+	
 }

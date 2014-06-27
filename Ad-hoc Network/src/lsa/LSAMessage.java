@@ -14,7 +14,7 @@ import exceptions.WrongMessageType;
 public class LSAMessage
 {
 	private IP sourceAddress;
-	private LinkedList<IP> neighborsAdresses;
+	private LinkedList<IP> neighborsAddresses;
 	private short sequenceNumber;
 	private short numberOfNeighbors;
 	
@@ -34,13 +34,13 @@ public class LSAMessage
 		sourceAddress = new IP(byteAddress);
 		sequenceNumber = message.getShort();
 		numberOfNeighbors = message.getShort();
-		neighborsAdresses = new LinkedList<IP>();
+		neighborsAddresses = new LinkedList<IP>();
 		for (int i = 0; i < numberOfNeighbors ; i++) {
 			
 			for (int j = 0; j < 4; j++) {
 				byteAddress[j]=message.get();
 			}
-			neighborsAdresses.add(new IP(byteAddress));
+			neighborsAddresses.add(new IP(byteAddress));
 		}
 	}
 	
@@ -48,8 +48,28 @@ public class LSAMessage
 	{
 		sourceAddress = myAddress;
 		numberOfNeighbors = 0;
-		neighborsAdresses = new LinkedList<IP>();
+		neighborsAddresses = new LinkedList<IP>();
 		this.sequenceNumber = sequenceNumber;
+	}
+	
+	//Allows comparison of two LSAs of different sequence number
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || !(o instanceof LSAMessage))
+			return false;
+		LSAMessage m = (LSAMessage) o;
+		return m.sequenceNumber == sequenceNumber
+				&& m.sourceAddress == sourceAddress
+				&& m.numberOfNeighbors == numberOfNeighbors
+				&& m.neighborsAddresses == neighborsAddresses;
+	}
+	
+	//Discards comparison of LSA from different sources
+	@Override 
+	public int hashCode()
+	{
+		return 2*sourceAddress.hashCode();
 	}
 	
 	public void display()
@@ -66,7 +86,7 @@ public class LSAMessage
 		System.out.print("Sequence number : "+sequenceNumber);
 		System.out.print("        ");
 		System.out.println(numberOfNeighbors+" neighbors");
-		for (IP neighbor : neighborsAdresses) {
+		for (IP neighbor : neighborsAddresses) {
 			System.out.print("#  ");
 			System.out.println(neighbor);
 		}
@@ -88,7 +108,7 @@ public class LSAMessage
 		buffer.put(sourceAddress.toBytes());
 		buffer.putShort(sequenceNumber);
 		buffer.putShort(numberOfNeighbors);
-		for (IP address : neighborsAdresses)
+		for (IP address : neighborsAddresses)
 			buffer.put(address.toBytes());
 		return buffer;
 		
@@ -113,12 +133,12 @@ public class LSAMessage
 	public void addNeighbor(IP neighbor)
 	{
 		numberOfNeighbors++;
-		neighborsAdresses.add(neighbor);
+		neighborsAddresses.add(neighbor);
 	}
 
 	public LinkedList<IP> neighbors()
 	{
-		return neighborsAdresses;
+		return neighborsAddresses;
 	}
 	
 	public IP source()

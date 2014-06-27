@@ -112,7 +112,10 @@ public class PacketManager implements Runnable
 				 */
 				
 				t = System.currentTimeMillis();
-				socket.setSoTimeout((int)(timeout-(t-ti)));
+				if (timeout-(t-ti)>10)
+					socket.setSoTimeout((int)(timeout-(t-ti)));
+				else
+					timeout = -1;
 			}
 		}
 		catch (SocketTimeoutException e) {

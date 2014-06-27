@@ -11,28 +11,35 @@ import utilities.IP;
 
 
 public class LSATable{
-	private Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();;
+	private Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();
 	private RoutingTable routingTable = new RoutingTable();
 
 	public LSATable()
 	{
 	}
 	
+	/*
+	 *  Function called when a LSA is received.
+	 *  If the message has a newer sequence number, we put it in the table,
+	 *  but we update the graph only if it brings different information.
+	 */
 	public void addLSA(IP neighbor, LSAMessage message)
 	{
 		LSAMessage oldMessage = table.get(neighbor);
 		if (oldMessage == null || 
 				oldMessage.sequenceNumber() < message.sequenceNumber()) {
 			table.put(neighbor, message);
-			routingTable.updateGraph(this);
-			routingTable.writeTable();
+			if (!oldMessage.equals(message)) {
+				routingTable.updateGraph(this);
+				routingTable.writeTable();
+			}
 		}
 	}
 	
 	//Takes in  consulting mode, returns the same mode
 	public boolean isLatest(IP address, ByteBuffer buffer)
 	{
-		buffer.getDouble();//Avancer de 8 octets
+		buffer.getDouble(); //Move of 8 bytes
 		LSAMessage latestInTable = table.get(address);
 		if (latestInTable!=null)
 			System.out.println("isLatest : "+latestInTable.sequenceNumber());
