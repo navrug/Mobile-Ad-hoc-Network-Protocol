@@ -9,7 +9,7 @@ import lsa.LSAMessage;
 
 public class HelloTable
 {
-	private Hashtable<IP, HelloMessage> table;
+	private final Hashtable<IP, HelloMessage> table;
 	private static short sequenceNumber = 0;
 
 	public HelloTable()

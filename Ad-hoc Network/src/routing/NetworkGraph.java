@@ -6,8 +6,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.Random;
 import java.util.Set;
 
 import graphics.FormDrawable;
@@ -18,21 +16,16 @@ import lsa.LSATable;
 
 public class NetworkGraph implements IDrawable
 {
-	boolean[][] neighbor;
-	IP[] addresses;
-	int numberOfNodes;
-	public Hashtable<IP, HashSet<IP>> graph;
+	/*private*/ public final Hashtable<IP, HashSet<IP>> graph;
 	
 	public NetworkGraph()
 	{
 		graph = new Hashtable<IP, HashSet<IP>>();
-		numberOfNodes = 1;
 	}
 	
 	NetworkGraph(LSATable table)
 	{
 		graph = new Hashtable<IP, HashSet<IP>>();
-		numberOfNodes = table.numberOfNodes();
 		for (LSAMessage message : table.messages()) {
 			for (IP neighbor : message.neighbors())
 				if (table.isConnectedTo(neighbor, message.source()))
@@ -91,7 +84,6 @@ public class NetworkGraph implements IDrawable
 			g.drawString(ip.toString(), x, y);
 			i++;
 		}
-		k++;
 	}
 
 	public void draw(Graphics g)
@@ -125,7 +117,7 @@ public class NetworkGraph implements IDrawable
 
 		while(nextRound.size() != 0) {
 			drawRound(g, nextRound, k);
-			k++;///////////////
+			k++;
 			lastRound = nextRound;
 			nextRound = new HashSet<IP>();
 			for (IP ip : lastRound) {

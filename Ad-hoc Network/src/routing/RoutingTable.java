@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
 import lsa.LSATable;
@@ -24,9 +24,9 @@ public class RoutingTable
 	private Hashtable<IP, IP> table;
 	private NetworkGraph graph;
 	private IP ownAddress;
-	private  Lock lock;
+	private ReentrantLock lock;
 
-	public RoutingTable(Lock lock)
+	public RoutingTable(ReentrantLock lock)
 	{
 		this.lock=lock;
 		try {
@@ -46,9 +46,7 @@ public class RoutingTable
 				Runtime.getRuntime().exec("ip route flush dev " + "eth0");
 				Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
 				Runtime.getRuntime().exec("ip route add to default via " + InetAddress.getLocalHost().getHostAddress());
-
-				for( IP m : table.keySet())
-				{
+				for (IP m : table.keySet()) {
 					Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
 					System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
 				}

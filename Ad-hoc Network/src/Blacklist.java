@@ -5,7 +5,7 @@ import utilities.IP;
 
 public class Blacklist {
 
-	private ArrayList<IP> list;
+	private final ArrayList<IP> list;
 	
 	public Blacklist() {
 		list=new ArrayList<IP>();

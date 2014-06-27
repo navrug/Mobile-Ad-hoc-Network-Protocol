@@ -12,10 +12,10 @@ import exceptions.WrongMessageType;
 
 public class HelloMessage
 {
-	private IP sourceAddress;
-	private LinkedList<IP> heardNeighbors;
+	private final IP sourceAddress;
+	private final LinkedList<IP> heardNeighbors;
 	private int numberOfHeard;
-	private LinkedList<IP> symmetricNeighbors;
+	private final LinkedList<IP> symmetricNeighbors;
 	private int numberOfSymmetric;
 
 

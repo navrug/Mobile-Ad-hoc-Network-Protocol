@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
@@ -21,13 +20,13 @@ import lsa.LSATable;
 
 public class PacketManager implements Runnable 
 {
-	private HelloTable helloTable = new HelloTable();
-	private static Lock lock = new ReentrantLock();
-	private LSATable lsaTable = new LSATable(lock);
+	private final HelloTable helloTable = new HelloTable();
+	private static ReentrantLock lock = new ReentrantLock();
+	private final LSATable lsaTable = new LSATable(lock);
 	private DatagramSocket socket;
 	private BlockingQueue<ByteBuffer> queue;
-	private static int helloPeriod = 2000;
-	private static int deviationRange = 100;
+	private final static int helloPeriod = 2000;
+	private final static int deviationRange = 100;
 
 	PacketManager()
 	{
@@ -78,7 +77,6 @@ public class PacketManager implements Runnable
 		finally {
 			lock.unlock();
 		}
-
 		DatagramPacket packet = 
 				new DatagramPacket(listeningBuffer,
 						listeningBuffer.length);		
@@ -126,9 +124,6 @@ public class PacketManager implements Runnable
 							}
 						}
 						queue.add(buffer);
-						//System.out.println(
-						//"[PacketManager] Buffer added to the queue.");
-
 					}
 					else
 						System.out.println(
@@ -154,11 +149,9 @@ public class PacketManager implements Runnable
 				}
 				else
 					timeout = -1;
-
 			}
 		}
 		catch (SocketTimeoutException e) {
-
 		}
 		System.out.println(
 				"[PacketManager] Received "

@@ -20,7 +20,7 @@ public class Main {
 
 	public static void main(String[] args) throws SocketException, UnknownHostException {
 
-		/*NetworkGraph g = new NetworkGraph();
+		NetworkGraph g = new NetworkGraph();
 		IP own = new IP(InetAddress.getLocalHost());
 		IP a = new IP(1,1,1,1);
 		IP b = new IP(1,1,1,2);
@@ -36,13 +36,6 @@ public class Main {
 		g.addEdge(c,d);
 		g.addEdge(d,c);
 		Printer p = new Printer(g, true);
-//p.refresh();*/
-		Integer a =0;
-		Integer b = 0;
-		LinkedList<Integer> l1 = new LinkedList<Integer>();
-		l1.add(a); l1.add(b);
-		LinkedList<Integer> l2 = new LinkedList<Integer>();
-		l2.add(b); l2.add(a);
-		System.out.println(l1.equals(l2));
+		p.refresh();
 	}
 }

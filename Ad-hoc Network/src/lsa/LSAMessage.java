@@ -13,8 +13,8 @@ import exceptions.WrongMessageType;
 
 public class LSAMessage
 {
-	private IP sourceAddress;
-	private LinkedList<IP> neighborsAddresses;
+	private final IP sourceAddress;
+	private final LinkedList<IP> neighborsAddresses;
 	private short sequenceNumber;
 	private short numberOfNeighbors;
 	

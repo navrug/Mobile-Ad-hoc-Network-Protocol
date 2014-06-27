@@ -14,9 +14,9 @@ import lsa.LSATable;
 
 public class MessageThread implements Runnable
 {
-	HelloTable helloTable;
-	LSATable lsaTable;
-	BlockingQueue<ByteBuffer> queue;
+	private final HelloTable helloTable;
+	private final LSATable lsaTable;
+	private final BlockingQueue<ByteBuffer> queue;
 	public static final byte helloType = 0;
 	public static final byte lsaType = 1;
 
