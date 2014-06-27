@@ -7,6 +7,7 @@ import java.util.Random;
 public class IP {
 	private final byte[] bytes = new byte[4];
 	private static IP myIP;
+	private static IP myIFace;
 
 	public static IP defineIP()
 	{
