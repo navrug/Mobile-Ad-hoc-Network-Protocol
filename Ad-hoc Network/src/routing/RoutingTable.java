@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
+import utilities.SystemCommand;
 import lsa.LSATable;
 
 public class RoutingTable implements IDrawable
@@ -32,24 +33,21 @@ public class RoutingTable implements IDrawable
 
 	public void writeTable()
 	{
+		lock.lock();
 		try {
-			lock.lock();
-			try {
-				System.out.println("[RountingThread] Reconfiguration ip");
-				Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
-				Runtime.getRuntime().exec("ip route flush dev " + "eth0");
-				Runtime.getRuntime().exec("ip addr add " + IP.myIP()  + "/16 dev " + "eth0" + " brd +");
-				Runtime.getRuntime().exec("ip route add to default via " + IP.myIP());
-				for (IP m : table.keySet()) {
-					Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
-					System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
-				}
+
+			System.out.println("[RountingThread] Reconfiguration ip");
+			SystemCommand.cmdExecPrint("ip addr flush dev " + "eth0");
+			SystemCommand.cmdExecPrint("ip route flush dev " + "eth0");
+			SystemCommand.cmdExecPrint("ip addr add " + IP.myIP() + "/16 dev " + "eth0" + " brd +");
+			SystemCommand.cmdExecPrint("ip route add to default via " + IP.myIP());
+			for (IP m : table.keySet()) {
+				SystemCommand.cmdExecPrint("ip route add to " + m + "/32 via " + table.get(m));
+				System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
 			}
-			finally {
-				lock.unlock();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
@@ -59,9 +57,9 @@ public class RoutingTable implements IDrawable
 		table = new Hashtable<IP, IP>();
 		HashSet<IP> inserted = new HashSet<IP>();
 		LinkedList<IP> queue = new LinkedList<IP>();
-			addNeighbors(IP.myIP(),
-					inserted,
-					queue);
+		addNeighbors(IP.myIP(),
+				inserted,
+				queue);
 		while (!queue.isEmpty())
 			addNeighbors(queue.remove(),
 					inserted,
@@ -84,14 +82,13 @@ public class RoutingTable implements IDrawable
 					queue.add(b);
 				}
 	}
-	
+
 	//GRAPHICS
-	
+
 	@Override
 	public void draw(Graphics g)
 	{
-		
+
 	}
-	
-	
+
 }
