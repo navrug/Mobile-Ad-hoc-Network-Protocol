@@ -113,15 +113,9 @@ public class PacketManager implements Runnable
 								&& lsaTable.isLatest(
 										new IP(packet.getAddress()), 
 										buffer)) {
-							netlock.lock();
-							try {
-								System.out.println(
-										"[PacketManager] LSA forwarded.");
-								socket.send(packet);
-							}
-							finally {
-								netlock.unlock();
-							}
+							System.out.println(
+									"[PacketManager] LSA forwarded.");
+							safeSend(socket, packet);
 						}
 						queue.add(buffer);
 					}
@@ -158,7 +152,7 @@ public class PacketManager implements Runnable
 						+numberOfPackets
 						+" packets in "+timeout+" ms.");
 	}
-	
+
 	private void safeSend(DatagramSocket socket, DatagramPacket packet)
 	{
 		netlock.lock();
