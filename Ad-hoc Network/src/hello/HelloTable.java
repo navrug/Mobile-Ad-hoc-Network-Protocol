@@ -82,6 +82,7 @@ public class HelloTable
 		for (IP neighbor : arrivalTime.keySet())
 			if (currentTime - arrivalTime.get(neighbor) > 5000) {
 				table.remove(neighbor);
+				arrivalTime.remove(neighbor);
 				result = true;
 			}
 		return result;	
