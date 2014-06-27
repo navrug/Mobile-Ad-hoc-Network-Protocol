@@ -66,7 +66,7 @@ public class PacketManager implements Runnable
 
 
 
-			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/16 dev " + "eth0" + " brd +");
+			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + "eth0" + " brd +");
 			SystemCommand.cmdExec("ip route add to default via " + IP.myIP());
 		} finally {
 			netlock.unlock();

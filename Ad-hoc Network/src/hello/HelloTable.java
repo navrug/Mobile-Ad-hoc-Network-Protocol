@@ -79,12 +79,19 @@ public class HelloTable
 	{
 		boolean result = false;
 		long currentTime = System.currentTimeMillis()-creationTime;
-		for (IP neighbor : arrivalTime.keySet())
-			if (currentTime - arrivalTime.get(neighbor) > 5000) {
-				table.remove(neighbor);
-				arrivalTime.remove(neighbor);
-				result = true;
-			}
+		try {
+			lock.lock();
+
+			for (IP neighbor : arrivalTime.keySet())
+				if (currentTime - arrivalTime.get(neighbor) > 5000) {
+					table.remove(neighbor);
+					arrivalTime.remove(neighbor);
+					result = true;
+				}
+		}
+		finally {
+			lock.unlock();
+		}
 		return result;	
 	}
 }
