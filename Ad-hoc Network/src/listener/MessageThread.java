@@ -43,6 +43,7 @@ public class MessageThread implements Runnable
 		return clone;
 	}
 
+	@Override
 	public void run()
 	{
 		while (true) {

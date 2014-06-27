@@ -38,7 +38,7 @@ public class Main {
 //		Printer p = new Printer(g, true);
 //		p.refresh();
 		
-		PacketManager packet = new PacketManager();
+		PacketManager packet = PacketManager.getInstance();
 		packet.run();
 	}
 }

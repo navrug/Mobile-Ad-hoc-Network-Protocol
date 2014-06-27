@@ -19,8 +19,9 @@ import lsa.LSAMessage;
 import lsa.LSATable;
 
 
-public class PacketManager implements Runnable 
+public class PacketManager implements Runnable
 {
+
 	private final HelloTable helloTable = new HelloTable();
 	private final ReentrantLock netlock = new ReentrantLock();
 	private final LSATable lsaTable = new LSATable(netlock);
@@ -29,7 +30,18 @@ public class PacketManager implements Runnable
 	private final static int helloPeriod = 2000;
 	private final static int deviationRange = 100;
 
-	PacketManager()
+	// Implements the Singleton design pattern
+	private static class PacketManagerHolder {
+		static private final PacketManager instance = 
+				new PacketManager();
+	}
+	
+	public static PacketManager getInstance()
+	{
+		return PacketManagerHolder.instance;
+	}	
+	
+	private PacketManager()
 	{
 		IP.defineIP();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
@@ -43,16 +55,16 @@ public class PacketManager implements Runnable
 		netlock.lock();
 		try {
 			System.out.println("[PacketManaer] Attribution d'un adresse ip");
-			
-			
-			
-			
-			
+
+
+
+
+
 			SystemCommand.cmdExec("ip addr flush dev " + "eth0");
 			SystemCommand.cmdExec("ip route flush dev " + "eth0");
-			
-			
-			
+
+
+
 			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/16 dev " + "eth0" + " brd +");
 			SystemCommand.cmdExec("ip route add to default via " + IP.myIP());
 		} finally {
@@ -176,6 +188,7 @@ public class PacketManager implements Runnable
 		}
 	}
 
+	@Override
 	public void run() {
 		Random r = new Random(System.currentTimeMillis());
 		HelloMessage hello;
@@ -186,7 +199,7 @@ public class PacketManager implements Runnable
 				new MessageThread(helloTable,
 						lsaTable,
 						queue),
-				"MessageThread").start();
+						"MessageThread").start();
 		System.out.println("[PacketManager] MessageThread launched.");
 		try {
 			/*
@@ -218,3 +231,4 @@ public class PacketManager implements Runnable
 		}
 	}
 }
+
