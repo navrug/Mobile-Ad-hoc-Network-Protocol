@@ -11,8 +11,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
 
 import routing.NetworkGraph;
+import routing.RoutingTable;
 import utilities.IP;
 import lsa.LSAMessage;
 
@@ -20,23 +22,29 @@ public class Main {
 
 	public static void main(String[] args) throws SocketException, UnknownHostException {
 
-//		NetworkGraph g = new NetworkGraph();
-//		IP own = new IP(InetAddress.getLocalHost());
-//		IP a = new IP(1,1,1,1);
-//		IP b = new IP(1,1,1,2);
-//		IP c = new IP(1,1,1,3);
-//		IP d = new IP(1,1,1,4);
-//		g.addEdge(a,own);
-//		g.addEdge(own,a);
-//		//System.out.println(g.neighbors(own).toArray()[0]);
-//		g.addEdge(own,b);
-//		g.addEdge(b,own);
-//		g.addEdge(own,c);
-//		g.addEdge(c,own);
-//		g.addEdge(c,d);
-//		g.addEdge(d,c);
-//		Printer p = new Printer(g, true);
-//		p.refresh();
+		/*IP.defineIP();
+		NetworkGraph g = new NetworkGraph();
+		IP own = IP.myIP();
+		IP a = new IP(1,1,1,1);
+		IP b = new IP(1,1,1,2);
+		IP c = new IP(1,1,1,3);
+		IP d = new IP(1,1,1,4);
+		g.addEdge(a,own);
+		g.addEdge(own,a);
+		g.addEdge(own,b);
+		g.addEdge(b,own);
+		g.addEdge(own,c);
+		g.addEdge(c,own);
+		g.addEdge(c,d);
+		g.addEdge(d,c);
+		
+		RoutingTable t = new RoutingTable(new ReentrantLock());
+		
+		t.graph = g;
+		t.updateGraph();
+		
+		/*Printer p = new Printer(t, true);
+		p.refresh();*/
 		
 		PacketManager packet = PacketManager.getInstance();
 		packet.run();

@@ -57,9 +57,6 @@ public class LSATable{
 		finally {
 			lock.unlock();
 		}
-		if (latestInTable!=null)
-			System.out.println("isLatest : "+latestInTable.sequenceNumber());
-		System.out.println(latestInTable == null);
 		short sequence = buffer.getShort();
 		buffer.position(0);
 		return latestInTable == null || latestInTable.sequenceNumber() 
