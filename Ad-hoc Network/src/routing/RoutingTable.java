@@ -24,7 +24,7 @@ public class RoutingTable
 	private Hashtable<IP, IP> table;
 	private NetworkGraph graph;
 	private IP ownAddress;
-	private ReentrantLock lock;
+	private final ReentrantLock lock;
 
 	public RoutingTable(ReentrantLock lock)
 	{
