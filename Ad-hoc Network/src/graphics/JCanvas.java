@@ -16,7 +16,7 @@ public class JCanvas extends JPanel
 	public List<IDrawable> drawables = new LinkedList<IDrawable>();
 
 	public void paint(Graphics g)
-	{	
+	{
 		Color c = g.getColor();
 		g.setColor(Color.BLACK);
 		g.fillRect(0,0,FormDrawable.figureHeight,

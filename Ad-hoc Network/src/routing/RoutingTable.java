@@ -18,22 +18,16 @@ import java.util.concurrent.locks.ReentrantLock;
 import utilities.IP;
 import lsa.LSATable;
 
-public class RoutingTable
+public class RoutingTable implements IDrawable
 {
-	//Printer printer;
 	private Hashtable<IP, IP> table;
 	private NetworkGraph graph;
-	private IP ownAddress;
+	Printer printer;
 	private final ReentrantLock lock;
 
 	public RoutingTable(ReentrantLock lock)
 	{
 		this.lock=lock;
-		try {
-			ownAddress = new IP(InetAddress.getLocalHost());
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 	}
 
 	public void writeTable()
@@ -44,8 +38,8 @@ public class RoutingTable
 				System.out.println("[RountingThread] Reconfiguration ip");
 				Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
 				Runtime.getRuntime().exec("ip route flush dev " + "eth0");
-				Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
-				Runtime.getRuntime().exec("ip route add to default via " + InetAddress.getLocalHost().getHostAddress());
+				Runtime.getRuntime().exec("ip addr add " + IP.myIP()  + "/16 dev " + "eth0" + " brd +");
+				Runtime.getRuntime().exec("ip route add to default via " + IP.myIP());
 				for (IP m : table.keySet()) {
 					Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
 					System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
@@ -65,18 +59,16 @@ public class RoutingTable
 		table = new Hashtable<IP, IP>();
 		HashSet<IP> inserted = new HashSet<IP>();
 		LinkedList<IP> queue = new LinkedList<IP>();
-		try {
-			addNeighbors(new IP(InetAddress.getLocalHost()),
+			addNeighbors(IP.myIP(),
 					inserted,
 					queue);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
 		while (!queue.isEmpty())
 			addNeighbors(queue.remove(),
 					inserted,
 					queue);
-		//printer.refresh();
+		if (printer == null)
+			printer = new Printer(graph, true);
+		printer.refresh();
 	}
 
 	private void addNeighbors(IP a,
@@ -87,10 +79,18 @@ public class RoutingTable
 			for (IP b : graph.neighbors(a))
 				if (!inserted.contains(b)) {
 					inserted.add(b);
-					if (!ownAddress.equals(a))
+					if (!IP.myIP().equals(a))
 						table.put(b, a);
 					queue.add(b);
 				}
+	}
+	
+	//GRAPHICS
+	
+	@Override
+	public void draw(Graphics g)
+	{
+		
 	}
 	
 	

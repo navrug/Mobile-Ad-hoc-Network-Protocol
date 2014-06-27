@@ -1,10 +1,24 @@
 package utilities;
 import java.net.InetAddress;
+import java.util.Random;
 
 
 public class IP {
 	private final byte[] bytes = new byte[4];
+	private static IP myIP;
 
+	public static IP defineIP()
+	{
+		Random r = new Random(System.currentTimeMillis());
+		myIP = new IP(1, 1, r.nextInt(), r.nextInt());
+		return myIP;
+	}
+	
+	public static IP myIP()
+	{
+		return myIP;
+	}
+	
 	public IP(byte[] bytes)
 	{
 		if (bytes.length != 4)
@@ -67,4 +81,6 @@ public class IP {
 	{
 		return bytes;
 	}
+	
+	
 }

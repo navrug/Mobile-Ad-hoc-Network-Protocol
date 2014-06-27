@@ -16,6 +16,8 @@ import lsa.LSAMessage;
 public class HelloTable
 {
 	private final Hashtable<IP, HelloMessage> table;
+	private final long creationTime = System.currentTimeMillis();
+	private final Hashtable<IP, Long> arrivalTime = new Hashtable<IP, Long>();
 	private static short sequenceNumber = 0;
 	private ReentrantLock lock = new ReentrantLock();
 
@@ -29,6 +31,8 @@ public class HelloTable
 		try {
 			lock.lock();
 			table.put(neighbor, message);
+			arrivalTime.put(neighbor, 
+					System.currentTimeMillis()-creationTime);
 		}
 		finally {
 			lock.unlock();
@@ -37,18 +41,11 @@ public class HelloTable
 
 	public HelloMessage createHello()
 	{
-
-		IP myAddress = null;
-		try {
-			myAddress = new IP(InetAddress.getLocalHost());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		HelloMessage result = new HelloMessage(myAddress);
+		HelloMessage result = new HelloMessage(IP.myIP());
 		try {
 			lock.lock();
 			for (IP neighbor : table.keySet()) {
-				if (table.get(neighbor).isSymmetric(myAddress))
+				if (table.get(neighbor).isSymmetric(IP.myIP()))
 					result.addSymmetric(neighbor);
 				else
 					result.addHeard(neighbor);
@@ -62,19 +59,13 @@ public class HelloTable
 
 	public LSAMessage createLSA()
 	{
-		IP myAddress = null;
-		try {
-			myAddress = new IP(InetAddress.getLocalHost());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
 		LSAMessage result = 
-				new LSAMessage(myAddress, sequenceNumber++);
+				new LSAMessage(IP.myIP(), sequenceNumber++);
 		try {
 			lock.lock();
 			for (IP neighbor : table.keySet())
 			{
-				if (table.get(neighbor).isSymmetric(myAddress))
+				if (table.get(neighbor).isSymmetric(IP.myIP()))
 					result.addNeighbor(neighbor);
 			}
 		}
@@ -82,5 +73,17 @@ public class HelloTable
 			lock.unlock();
 		}
 		return result;
+	}
+
+	public boolean checkDeadNodes()
+	{
+		boolean result = false;
+		long currentTime = System.currentTimeMillis()-creationTime;
+		for (IP neighbor : arrivalTime.keySet())
+			if (currentTime - arrivalTime.get(neighbor) > 5000) {
+				table.remove(neighbor);
+				result = true;
+			}
+		return result;	
 	}
 }
