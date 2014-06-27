@@ -21,8 +21,8 @@ import lsa.LSATable;
 public class PacketManager implements Runnable 
 {
 	private final HelloTable helloTable = new HelloTable();
-	private final ReentrantLock lock = new ReentrantLock();
-	private final LSATable lsaTable = new LSATable(lock);
+	private final ReentrantLock netlock = new ReentrantLock();
+	private final LSATable lsaTable = new LSATable(netlock);
 	private DatagramSocket socket;
 	private BlockingQueue<ByteBuffer> queue;
 	private final static int helloPeriod = 2000;
@@ -38,7 +38,7 @@ public class PacketManager implements Runnable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		lock.lock();
+		netlock.lock();
 		try {
 			Runtime.getRuntime().exec("echo 1 > /proc/sys/net/ipv4/ip_forward");
 			Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
@@ -48,7 +48,7 @@ public class PacketManager implements Runnable
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} finally {
-			lock.unlock();
+			netlock.unlock();
 		}
 	}
 
@@ -70,12 +70,12 @@ public class PacketManager implements Runnable
 		System.out.println(
 				"[PacketManager] Listening for "
 						+timeout+" ms...");
-		lock.lock();
+		netlock.lock();
 		try {
 			socket.setSoTimeout(timeout);
 		}
 		finally {
-			lock.unlock();
+			netlock.unlock();
 		}
 		DatagramPacket packet = 
 				new DatagramPacket(listeningBuffer,
@@ -84,12 +84,12 @@ public class PacketManager implements Runnable
 		int numberOfPackets = 0;
 		try {
 			while(System.currentTimeMillis()-ti<timeout) {
-				lock.lock();
+				netlock.lock();
 				try {
 					socket.receive(packet);
 				}
 				finally {
-					lock.unlock();
+					netlock.unlock();
 				}
 				/*
 				 * Debugging
@@ -113,14 +113,14 @@ public class PacketManager implements Runnable
 								&& lsaTable.isLatest(
 										new IP(packet.getAddress()), 
 										buffer)) {
-							lock.lock();
+							netlock.lock();
 							try {
 								System.out.println(
 										"[PacketManager] LSA forwarded.");
 								socket.send(packet);
 							}
 							finally {
-								lock.unlock();
+								netlock.unlock();
 							}
 						}
 						queue.add(buffer);
@@ -139,12 +139,12 @@ public class PacketManager implements Runnable
 
 				t = System.currentTimeMillis();
 				if (timeout-(t-ti)>10) {
-					lock.lock();
+					netlock.lock();
 					try {
 						socket.setSoTimeout((int)(timeout-(t-ti)));
 					}
 					finally {
-						lock.unlock();
+						netlock.unlock();
 					}	
 				}
 				else
@@ -180,12 +180,12 @@ public class PacketManager implements Runnable
 			 */
 			while (true) {
 				hello = helloTable.createHello();
-				lock.lock();
+				netlock.lock();
 				try {
 					socket.send(hello.toPacket());
 				}
 				finally {
-					lock.unlock();
+					netlock.unlock();
 				}
 
 				System.out.println("[PacketManager] Hello sent.");
@@ -193,24 +193,24 @@ public class PacketManager implements Runnable
 						+ r.nextInt(2*deviationRange)-deviationRange);
 				hello = helloTable.createHello();
 
-				lock.lock();
+				netlock.lock();
 				try {
 					socket.send(hello.toPacket());
 				}
 				finally {
-					lock.unlock();
+					netlock.unlock();
 				}
 
 				System.out.println("[PacketManager] Hello sent.");
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
 				lsa = helloTable.createLSA();		
-				lock.lock();
+				netlock.lock();
 				try {
 					socket.send(lsa.toPacket());
 				}
 				finally {
-					lock.unlock();
+					netlock.unlock();
 				}
 
 				System.out.println("[PacketManager] LSA #"+lsa.sequenceNumber()+" sent.");
