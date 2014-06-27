@@ -59,9 +59,9 @@ public class LSAMessage
 		if (o == null || !(o instanceof LSAMessage))
 			return false;
 		LSAMessage m = (LSAMessage) o;
-		return  m.sourceAddress == sourceAddress
+		return  m.sourceAddress.equals(sourceAddress)
 				&& m.numberOfNeighbors == numberOfNeighbors
-				&& m.neighborsAddresses == neighborsAddresses;
+				&& m.neighborsAddresses.equals(neighborsAddresses);
 	}
 	
 	//Discards comparison of LSA from different sources
