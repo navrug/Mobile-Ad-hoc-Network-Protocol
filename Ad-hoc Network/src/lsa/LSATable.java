@@ -35,6 +35,14 @@ public class LSATable{
 					oldMessage.sequenceNumber() < message.sequenceNumber()) {
 				table.put(neighbor, message);
 				if (!message.equals(oldMessage)) {
+					
+					System.out.println("##########WAZZZAAAA##############");
+					message.display();
+					if (oldMessage!=null) {
+						oldMessage.display();
+					}
+					System.out.println("##########WAZZZAAAA##############");
+					
 					routingTable.updateGraph(this);
 					routingTable.writeTable();
 				}
