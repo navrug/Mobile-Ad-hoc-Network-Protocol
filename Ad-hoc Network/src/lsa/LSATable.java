@@ -12,8 +12,8 @@ import utilities.IP;
 
 
 public class LSATable{
-	private Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();;
-	private RoutingTable routingTable;
+	private final Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();
+	private final RoutingTable routingTable;
 
 	public LSATable(ReentrantLock lock)
 	{

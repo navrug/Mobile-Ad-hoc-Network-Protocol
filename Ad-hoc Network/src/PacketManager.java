@@ -21,7 +21,7 @@ import lsa.LSATable;
 public class PacketManager implements Runnable 
 {
 	private final HelloTable helloTable = new HelloTable();
-	private static ReentrantLock lock = new ReentrantLock();
+	private final ReentrantLock lock = new ReentrantLock();
 	private final LSATable lsaTable = new LSATable(lock);
 	private DatagramSocket socket;
 	private BlockingQueue<ByteBuffer> queue;
