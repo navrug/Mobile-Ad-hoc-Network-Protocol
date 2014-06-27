@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
+import utilities.SystemCommand;
 import lsa.LSATable;
 
 public class RoutingTable
@@ -38,24 +39,25 @@ public class RoutingTable
 
 	public void writeTable()
 	{
+		lock.lock();
 		try {
-			lock.lock();
+
+			System.out.println("[RountingThread] Reconfiguration ip");
+			SystemCommand.cmdExecPrint("ip addr flush dev " + "eth0");
+			SystemCommand.cmdExecPrint("ip route flush dev " + "eth0");
 			try {
-				System.out.println("[RountingThread] Reconfiguration ip");
-				Runtime.getRuntime().exec("ip addr flush dev " + "eth0");
-				Runtime.getRuntime().exec("ip route flush dev " + "eth0");
-				Runtime.getRuntime().exec("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
-				Runtime.getRuntime().exec("ip route add to default via " + InetAddress.getLocalHost().getHostAddress());
-				for (IP m : table.keySet()) {
-					Runtime.getRuntime().exec("ip route add to " + m + "/32 via " + table.get(m));
-					System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
-				}
+				SystemCommand.cmdExecPrint("ip addr add " + InetAddress.getLocalHost().getHostAddress()  + "/16 dev " + "eth0" + " brd +");
+				SystemCommand.cmdExecPrint("ip route add to default via " + InetAddress.getLocalHost().getHostAddress());
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
 			}
-			finally {
-				lock.unlock();
+			for (IP m : table.keySet()) {
+				SystemCommand.cmdExecPrint("ip route add to " + m + "/32 via " + table.get(m));
+				System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
@@ -92,6 +94,6 @@ public class RoutingTable
 					queue.add(b);
 				}
 	}
-	
-	
+
+
 }
