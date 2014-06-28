@@ -28,8 +28,8 @@ public class HelloTable
 
 	public void addHello(IP neighbor, HelloMessage message)
 	{
+		lock.lock();
 		try {
-			lock.lock();
 			table.put(neighbor, message);
 			arrivalTime.put(neighbor, 
 					System.currentTimeMillis()-creationTime);
@@ -42,8 +42,8 @@ public class HelloTable
 	public HelloMessage createHello()
 	{
 		HelloMessage result = new HelloMessage(IP.myIP());
+		lock.lock();
 		try {
-			lock.lock();
 			for (IP neighbor : table.keySet()) {
 				if (table.get(neighbor).isSymmetric(IP.myIP()))
 					result.addSymmetric(neighbor);
@@ -61,8 +61,8 @@ public class HelloTable
 	{
 		LSAMessage result = 
 				new LSAMessage(IP.myIP(), sequenceNumber++);
+		lock.lock();
 		try {
-			lock.lock();
 			for (IP neighbor : table.keySet())
 			{
 				if (table.get(neighbor).isSymmetric(IP.myIP()))
@@ -79,8 +79,8 @@ public class HelloTable
 	{
 		boolean result = false;
 		long currentTime = System.currentTimeMillis()-creationTime;
+		lock.lock();
 		try {
-			lock.lock();
 
 			for (IP neighbor : arrivalTime.keySet())
 				if (currentTime - arrivalTime.get(neighbor) > 5000) {
