@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -181,8 +182,15 @@ public class PacketManager implements Runnable
 	
 	private void safeForward(DatagramSocket socket, DatagramPacket packet)
 	{
-		DatagramPacket newPacket = new DatagramPacket(packet.getData(),
-				packet.getLength());
+		DatagramPacket newPacket =null;
+		try {
+			newPacket = new DatagramPacket(packet.getData(),
+					packet.getLength(),
+					InetAddress.getByName("255.255.255.255"),
+					1234);
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
 		netlock.lock();
 		try {
 			try {
