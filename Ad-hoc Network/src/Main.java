@@ -37,6 +37,8 @@ public class Main {
 		g.addEdge(c,own);
 		g.addEdge(c,d);
 		g.addEdge(d,c);
+		g.addEdge(a,b);
+		g.addEdge(b,a);
 		
 		RoutingTable t = new RoutingTable(new ReentrantLock());
 		

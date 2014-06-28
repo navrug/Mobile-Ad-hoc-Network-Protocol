@@ -6,14 +6,9 @@ import graphics.Printer;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
@@ -89,73 +84,71 @@ public class RoutingTable implements IDrawable
 	private int xCircleCoord(int rank, int n)
 	{
 		return FormDrawable.doubleToCoord(0.5
-				+Math.cos(rank*2*3.1415/(double)n)/2);
+				+0.4*Math.cos(rank*2*3.1415/(double)n));
 	}
 	private int yCircleCoord(int rank, int n)
 	{
 		return FormDrawable.headerHeight
 				+ FormDrawable.doubleToCoord(0.5
-						+Math.sin(rank*2*3.1415/(double)n)/2);
+						+0.4*Math.sin(rank*2*3.1415/(double)n));
+	}
+	private void drawLine(Graphics g, int a, int b, int n) {
+		g.drawLine(xCircleCoord(a, n),
+				yCircleCoord(a, n),
+				xCircleCoord(b, n),
+				yCircleCoord(b, n));
+	}
+	private void drawNode(Graphics g, IP ip, int a, int n)
+	{
+		g.fillOval(xCircleCoord(a, n)-4,
+				yCircleCoord(a, n)-4,9,9);
+		g.drawString(ip.toString(),
+				xCircleCoord(a, n)-4,
+				yCircleCoord(a, n)-4);
 	}
 
 	@Override
 	public void draw(Graphics g)
 	{
 		Color c = g.getColor();
-		g.setColor(Color.RED);
+		//Counting the nodes
 		Hashtable<IP,Integer> ranks = new Hashtable<IP,Integer>();
-		int rank = -1;
+		int rank = 0;
 		ranks.put(IP.myIP(), rank++);
-		for (IP a : graph.neighbors(IP.myIP())) {
+		for (IP a : graph.neighbors(IP.myIP()))
 			ranks.put(a, rank++);
-		}
-		for (IP a : table.keySet()) {
-			System.out.println((rank+1)+" "+a+"  "+table.get(a));
+		for (IP a : table.keySet())
 			ranks.put(a, rank++);
-		}
-		System.out.println("----------------");
-		int n = rank+1;
-		for (IP a : graph.neighbors(IP.myIP())) {
-			System.out.println(table.get(a));
-			System.out.println(ranks.get(IP.myIP()));
-			g.drawLine(xCircleCoord(ranks.get(a), n),
-					yCircleCoord(ranks.get(a), n),
-					xCircleCoord(ranks.get(IP.myIP()), n),
-					yCircleCoord(ranks.get(IP.myIP()), n));
-		}
-		for (IP a : table.keySet()) {
-			System.out.println(table.get(a));
-			System.out.println(ranks.get(table.get(a)));
-			g.drawLine(xCircleCoord(ranks.get(a), n),
-					yCircleCoord(ranks.get(a), n),
-					xCircleCoord(ranks.get(table.get(a)), n),
-					yCircleCoord(ranks.get(table.get(a)), n));
-		}
+		int n = rank;
+		//Drawing all the edges of the graph
+		g.setColor(Color.GRAY);
+		for (IP a : graph.neighbors(IP.myIP()))
+			for (IP b : graph.neighbors(a))
+				drawLine(g, ranks.get(a), ranks.get(b), n);
+		for (IP a : table.keySet())
+			for (IP b : graph.neighbors(a))
+				drawLine(g, ranks.get(a), ranks.get(b), n);
+		//Drawing the routing edges
+		g.setColor(Color.RED);
+		for (IP a : graph.neighbors(IP.myIP()))
+			drawLine(g, ranks.get(a), ranks.get(IP.myIP()), n);
+		for (IP a : table.keySet())
+			drawLine(g, ranks.get(a), ranks.get(table.get(a)), n);
+		
 		g.setColor(Color.WHITE);
+		//Drawing the nodes
+		drawNode(g, IP.myIP(), ranks.get(IP.myIP()), n);
+		for (IP a : graph.neighbors(IP.myIP()))
+			drawNode(g, a, ranks.get(a), n);
+		for (IP a : table.keySet())
+			drawNode(g, a, ranks.get(a), n);
+		//Drawing the header
 		g.drawString(
-				"Genetic algorithm over Eulierian cycle search"
+				"Graphic representation of the routing table of "
+				+IP.myIP()
 				,20,20);
-		g.drawString("Fitness : ",20,40);
-		g.drawString("Iteration #",20,60);
-		g.fillOval(xCircleCoord(ranks.get(IP.myIP()), n)-4,
-				yCircleCoord(ranks.get(IP.myIP()), n)-4,9,9);
-		g.drawString(IP.myIP().toString(),
-				xCircleCoord(ranks.get(IP.myIP()), n)-4,
-				yCircleCoord(ranks.get(IP.myIP()), n)-4);
-		for (IP a : graph.neighbors(IP.myIP())) {
-			g.fillOval(xCircleCoord(ranks.get(a), n)-4,
-					yCircleCoord(ranks.get(a), n)-4,9,9);
-			g.drawString(a.toString(),
-					xCircleCoord(ranks.get(a), n)-4,
-					yCircleCoord(ranks.get(a), n)-4);
-		}
-		for (IP a : table.keySet()) {
-			g.fillOval(xCircleCoord(ranks.get(a), n)-4,
-					yCircleCoord(ranks.get(a), n)-4,9,9);
-			g.drawString(a.toString(),
-					xCircleCoord(ranks.get(a), n)-4,
-					yCircleCoord(ranks.get(a), n)-4);
-		}
+		g.drawString("Red edges are routes,"
+				+" white are unused connections",20,40);
 		g.setColor(c);
 	}
 
