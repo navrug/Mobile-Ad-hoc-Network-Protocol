@@ -28,8 +28,8 @@ public class LSATable{
 	 */
 	public void addLSA(IP neighbor, LSAMessage message)
 	{
+		lock.lock();
 		try {
-			lock.lock();
 			LSAMessage oldMessage = table.get(neighbor);
 			if (oldMessage == null || 
 					oldMessage.sequenceNumber() < message.sequenceNumber()) {
@@ -50,8 +50,8 @@ public class LSATable{
 	{
 		buffer.getDouble(); //Move of 8 bytes
 		LSAMessage latestInTable = null;
+		lock.lock();
 		try {
-			lock.lock();
 			latestInTable = table.get(address);
 		}
 		finally {
@@ -66,8 +66,8 @@ public class LSATable{
 
 	public int numberOfNodes()
 	{
+		lock.lock();
 		try {
-			lock.lock();
 			return table.size();
 		}
 		finally {
@@ -77,8 +77,8 @@ public class LSATable{
 
 	public Set<IP> addresses()
 	{
+		lock.lock();
 		try {
-			lock.lock();
 			return table.keySet();
 		}
 		finally {
@@ -88,8 +88,8 @@ public class LSATable{
 
 	public Collection<LSAMessage> messages()
 	{
+		lock.lock();
 		try {
-			lock.lock();
 			return table.values();
 		}
 		finally {
@@ -99,8 +99,8 @@ public class LSATable{
 
 	public boolean isConnectedTo(IP a, IP b)
 	{
+		lock.lock();
 		try {
-			lock.lock();
 			return (table.get(a)!=null)&&table.get(a).neighbors().contains(b);
 		}
 		finally {
