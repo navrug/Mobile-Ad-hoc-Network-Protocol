@@ -55,19 +55,12 @@ public class PacketManager implements Runnable
 		}
 		netlock.lock();
 		try {
-			System.out.println("[PacketManaer] Attribution d'un adresse ip");
-
-
-
-
+			System.out.println("[PacketManager] Attribution d'un adresse ip");
 
 			SystemCommand.cmdExec("ip addr flush dev " + "eth0");
 			SystemCommand.cmdExec("ip route flush dev " + "eth0");
-
-
-
 			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + "eth0" + " brd +");
-			SystemCommand.cmdExec("ip route add to default via " + IP.myIP());
+			SystemCommand.cmdExec("ip route add default dev eth0");
 		} finally {
 			netlock.unlock();
 		}
