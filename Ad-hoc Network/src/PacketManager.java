@@ -36,12 +36,12 @@ public class PacketManager implements Runnable
 		static private final PacketManager instance = 
 				new PacketManager();
 	}
-	
+
 	public static PacketManager getInstance()
 	{
 		return PacketManagerHolder.instance;
 	}	
-	
+
 	private PacketManager()
 	{
 		//IP.defineIP();
@@ -179,7 +179,7 @@ public class PacketManager implements Runnable
 			netlock.unlock();
 		}
 	}
-	
+
 	private void safeForward(DatagramSocket socket, DatagramPacket packet)
 	{
 		DatagramPacket newPacket =null;
@@ -193,11 +193,9 @@ public class PacketManager implements Runnable
 		}
 		netlock.lock();
 		try {
-			try {
-				socket.send(newPacket);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			socket.send(newPacket);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		finally {
 			netlock.unlock();
@@ -215,7 +213,7 @@ public class PacketManager implements Runnable
 				new MessageThread(helloTable,
 						lsaTable,
 						queue),
-						"MessageThread").start();
+				"MessageThread").start();
 		System.out.println("[PacketManager] MessageThread launched.");
 		try {
 			/*
