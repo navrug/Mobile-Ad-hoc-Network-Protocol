@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
 import lsa.LSAMessage;
+import lsa.LSATable;
 
 /*
  * This class has to be concurrency safe because MessageThread
@@ -19,10 +20,12 @@ public class HelloTable
 	private final long creationTime = System.currentTimeMillis();
 	private final Hashtable<IP, Long> arrivalTime = new Hashtable<IP, Long>();
 	private static short sequenceNumber = 0;
+	private final LSATable lsaTable;
 	private ReentrantLock lock = new ReentrantLock();
 
-	public HelloTable()
+	public HelloTable(LSATable lsaTable)
 	{
+		this.lsaTable = lsaTable;
 		table = new Hashtable<IP, HelloMessage>();
 	}
 
@@ -72,6 +75,7 @@ public class HelloTable
 		finally {
 			lock.unlock();
 		}
+		lsaTable.addLSA(IP.myIP(), result);
 		return result;
 	}
 

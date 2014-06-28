@@ -22,9 +22,9 @@ import lsa.LSATable;
 public class PacketManager implements Runnable
 {
 
-	private final HelloTable helloTable = new HelloTable();
 	private final ReentrantLock netlock = new ReentrantLock();
 	private final LSATable lsaTable = new LSATable(netlock);
+	private final HelloTable helloTable = new HelloTable(lsaTable);
 	private DatagramSocket socket;
 	private BlockingQueue<ByteBuffer> queue;
 	private final static int helloPeriod = 2000;
