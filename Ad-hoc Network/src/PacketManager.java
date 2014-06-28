@@ -57,7 +57,7 @@ public class PacketManager implements Runnable
 		netlock.lock();
 		try {
 			System.out.println("[PacketManager] Attribution d'un adresse ip");
-
+			SystemCommand.cmdExec("echo 1 > /proc/sys/net/ipv4/ip_forward");
 			SystemCommand.cmdExec("ip addr flush dev " + "eth0");
 			SystemCommand.cmdExec("ip route flush dev " + "eth0");
 			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + "eth0" + " brd +");
