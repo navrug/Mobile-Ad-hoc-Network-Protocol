@@ -53,7 +53,12 @@ public class NetworkGraph implements IDrawable
 	{
 		return graph.keySet();
 	}
-
+	
+	public boolean contains(IP ip)
+	{
+		return graph.containsKey(ip) ;
+	}
+	
 	//GRAPHICS 
 
 	private int xCircleCoord(int rank, int n, int k)

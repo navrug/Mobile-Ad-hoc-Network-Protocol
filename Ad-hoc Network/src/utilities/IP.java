@@ -6,13 +6,17 @@ import java.util.Random;
 
 public class IP {
 	private final byte[] bytes = new byte[4];
+	private boolean isInternetProvider=false;
 	private static IP myIP;
-	private static IP myIface;
+	private static IP myDefaultRoute;
+	private static String myIface;
 
 	public static IP defineIP()
 	{
 		Random r = new Random(System.currentTimeMillis());
 		myIP = new IP(1, 1, r.nextInt(), r.nextInt());
+		myIP.isInternetProvider=false;
+		myDefaultRoute = myIP;
 		return myIP;
 	}
 	
@@ -26,16 +30,42 @@ public class IP {
 		return myIP;
 	}
 	
+	public static IP defineDefaultRoute()
+	{
+		myDefaultRoute = myIP;
+		return myIP;
+	}
+	
+	public static IP defineDefaultRoute(IP defaultRoute)
+	{
+		myDefaultRoute = defaultRoute;
+		return myDefaultRoute;
+	}
+	
 	public static IP myIP()
 	{
 		return myIP;
 	}
 	
-	public static IP myIface()
+	public static IP myDefaultRoute()
+	{
+		return myDefaultRoute;
+	}
+	
+	public boolean isInternetProvider()
+	{
+		return isInternetProvider;
+	}
+	
+	public static String myIface()
 	{
 		return myIface;
 	}
 	
+	public void setInternetProvider(boolean isInternetProvider) {
+		this.isInternetProvider = isInternetProvider;
+	}
+
 	public IP(byte[] bytes)
 	{
 		if (bytes.length != 4)

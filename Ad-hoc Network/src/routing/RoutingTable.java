@@ -33,10 +33,12 @@ public class RoutingTable implements IDrawable
 		try {
 
 			System.out.println("[RountingThread] Reconfiguration ip");
-			SystemCommand.cmdExec("ip addr flush dev " + "eth0");
-			SystemCommand.cmdExec("ip route flush dev " + "eth0");
-			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + "eth0" + " brd +");
-			SystemCommand.cmdExec("ip route add default dev eth0");
+			SystemCommand.cmdExec("ip addr flush dev " + IP.myIface());
+			SystemCommand.cmdExec("ip route flush dev " + IP.myIface());
+			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + IP.myIface() + " brd +");
+			
+			SystemCommand.cmdExec("ip route add default to " + IP.myDefaultRoute());
+			
 			for (IP m : table.keySet()) {
 				SystemCommand.cmdExec("ip route add to " + m + "/32 via " + table.get(m));
 				System.out.println("[RountingThread] ip route add to " + m + "/32 via " + table.get(m));
@@ -49,6 +51,8 @@ public class RoutingTable implements IDrawable
 
 	public void updateGraph(LSATable lsaTable)
 	{
+		if(!graph.contains(IP.myDefaultRoute())) 
+				IP.defineDefaultRoute(IP.myIP());
 		graph = new NetworkGraph(lsaTable);
 		table = new Hashtable<IP, IP>();
 		HashSet<IP> inserted = new HashSet<IP>();
@@ -57,10 +61,15 @@ public class RoutingTable implements IDrawable
 		addNeighbors(IP.myIP(),
 				inserted,
 				queue);
-		while (!queue.isEmpty())
+		while (!queue.isEmpty()) {
+			IP ip = queue.remove();
+			if(IP.myDefaultRoute().equals(IP.myIP())&&ip.isInternetProvider()) {
+				IP.defineDefaultRoute(ip);
+			}
 			addNeighbors(queue.remove(),
 					inserted,
 					queue);
+			}
 		if (printer == null)
 			printer = new Printer(this, true);
 		printer.refresh();
