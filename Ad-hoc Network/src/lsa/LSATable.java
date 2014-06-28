@@ -46,13 +46,17 @@ public class LSATable{
 	}
 
 	//Takes in  consulting mode, returns the same mode
-	public boolean isLatest(IP address, ByteBuffer buffer)
+	public boolean isLatest(ByteBuffer buffer)
 	{
-		buffer.getDouble(); //Move of 8 bytes
+		buffer.getFloat(); //Move of 8 bytes
+		byte[] source = new byte[4];
+		for (int i =0; i<4; i++)
+			source[i] = buffer.get();
+		IP sourceAddress = new IP(source);
 		LSAMessage latestInTable = null;
 		lock.lock();
 		try {
-			latestInTable = table.get(address);
+			latestInTable = table.get(sourceAddress);
 		}
 		finally {
 			lock.unlock();

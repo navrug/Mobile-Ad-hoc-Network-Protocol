@@ -107,15 +107,16 @@ public class PacketManager implements Runnable
 				/*
 				 * Debugging
 				 */
-				if (!blacklist.contains(new IP(packet.getAddress()))) {
+				IP senderIP = new IP(packet.getAddress());
+				if (!blacklist.contains(senderIP)) {
 					/*
 					 * Debugging
 					 */
 
-					if (!IP.myIP().equals(new IP(packet.getAddress()))) {
+					if (!IP.myIP().equals(senderIP)) {
 						System.out.println(
 								"[PacketManager] Packet received from "
-										+packet.getAddress().getHostAddress());
+										+senderIP);
 						numberOfPackets++;
 						buffer = ByteBuffer.allocate(
 								packet.getData().length);
@@ -123,9 +124,7 @@ public class PacketManager implements Runnable
 						buffer.flip(); // consult mode
 						//Depends on the encoding !!
 						if (buffer.array()[0]==MessageThread.lsaType
-								&& lsaTable.isLatest(
-										new IP(packet.getAddress()), 
-										buffer)) {
+								&& lsaTable.isLatest(buffer)) {
 							System.out.println(
 									"[PacketManager] LSA forwarded.");
 							safeSend(socket, packet);
