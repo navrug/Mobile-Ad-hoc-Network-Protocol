@@ -48,7 +48,7 @@ public class LSATable{
 	//Takes in  consulting mode, returns the same mode
 	public boolean isLatest(ByteBuffer buffer)
 	{
-		buffer.getFloat(); //Move of 8 bytes
+		buffer.getFloat(); //Move of 4 bytes
 		byte[] source = new byte[4];
 		for (int i =0; i<4; i++)
 			source[i] = buffer.get();

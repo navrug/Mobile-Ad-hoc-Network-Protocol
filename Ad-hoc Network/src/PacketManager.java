@@ -122,12 +122,11 @@ public class PacketManager implements Runnable
 								packet.getData().length);
 						buffer.put(packet.getData());
 						buffer.flip(); // consult mode
-						//Depends on the encoding !!
 						if (buffer.array()[0]==MessageThread.lsaType
 								&& lsaTable.isLatest(buffer)) {
 							System.out.println(
 									"[PacketManager] LSA forwarded.");
-							safeSend(socket, packet);
+							safeForward(socket, packet);
 						}
 						queue.add(buffer);
 					}
@@ -172,7 +171,23 @@ public class PacketManager implements Runnable
 			try {
 				socket.send(packet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		finally {
+			netlock.unlock();
+		}
+	}
+	
+	private void safeForward(DatagramSocket socket, DatagramPacket packet)
+	{
+		DatagramPacket newPacket = new DatagramPacket(packet.getData(),
+				packet.getLength());
+		netlock.lock();
+		try {
+			try {
+				socket.send(newPacket);
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
