@@ -31,6 +31,11 @@ public class IP {
 		return myIP;
 	}
 	
+	public static IP myIface()
+	{
+		return myIface;
+	}
+	
 	public IP(byte[] bytes)
 	{
 		if (bytes.length != 4)
