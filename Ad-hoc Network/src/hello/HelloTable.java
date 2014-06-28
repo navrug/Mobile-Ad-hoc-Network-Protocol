@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
 import lsa.LSAMessage;
+import mpr.MPR;
 
 /*
  * This class has to be concurrency safe because MessageThread
@@ -16,13 +17,15 @@ import lsa.LSAMessage;
 public class HelloTable
 {
 	private final Hashtable<IP, HelloMessage> table;
+	private final MPR mpr;
 	private final long creationTime = System.currentTimeMillis();
 	private final Hashtable<IP, Long> arrivalTime = new Hashtable<IP, Long>();
 	private static short sequenceNumber = 0;
 	private ReentrantLock lock = new ReentrantLock();
 
-	public HelloTable()
+	public HelloTable(MPR mpr)
 	{
+		this.mpr = mpr;
 		table = new Hashtable<IP, HelloMessage>();
 	}
 
@@ -46,7 +49,10 @@ public class HelloTable
 			lock.lock();
 			for (IP neighbor : table.keySet()) {
 				if (table.get(neighbor).isSymmetric(IP.myIP()))
-					result.addSymmetric(neighbor);
+					if (mpr.isMPR(neighbor))
+						result.addMPR(neighbor)
+						else
+							result.addSymmetric(neighbor);
 				else
 					result.addHeard(neighbor);
 			}

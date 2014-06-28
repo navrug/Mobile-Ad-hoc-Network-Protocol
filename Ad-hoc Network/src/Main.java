@@ -22,7 +22,7 @@ public class Main {
 
 	public static void main(String[] args) throws SocketException, UnknownHostException {
 
-		/*IP.defineIP();
+		IP.defineIP();
 		NetworkGraph g = new NetworkGraph();
 		IP own = IP.myIP();
 		IP a = new IP(1,1,1,1);
@@ -48,7 +48,7 @@ public class Main {
 		/*Printer p = new Printer(t, true);
 		p.refresh();*/
 		
-		PacketManager packet = PacketManager.getInstance();
-		packet.run();
+		/*PacketManager packet = PacketManager.getInstance();
+		packet.run();*/
 	}
 }

@@ -17,6 +17,8 @@ public class HelloMessage
 	private int numberOfHeard;
 	private final LinkedList<IP> symmetricNeighbors;
 	private int numberOfSymmetric;
+	private final LinkedList<IP> mpr;
+	private int numberOfMPR;
 
 
 	public HelloMessage(IP myAddress)
@@ -26,6 +28,8 @@ public class HelloMessage
 		heardNeighbors = new LinkedList<IP>();
 		numberOfSymmetric = 0;
 		symmetricNeighbors = new LinkedList<IP>();
+		numberOfMPR = 0;
+		mpr = new LinkedList<IP>();
 	}
 
 
@@ -159,6 +163,12 @@ public class HelloMessage
 	{
 		numberOfSymmetric++;
 		symmetricNeighbors.add(address);
+	}
+	
+	public void addMPR(IP address)
+	{
+		numberOfMPR++;
+		mpr.add(address);
 	}
 
 	public boolean isSymmetric(IP myAddress)

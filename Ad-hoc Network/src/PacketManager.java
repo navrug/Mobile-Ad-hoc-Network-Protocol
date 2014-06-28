@@ -17,12 +17,13 @@ import utilities.SystemCommand;
 import listener.MessageThread;
 import lsa.LSAMessage;
 import lsa.LSATable;
+import mpr.MPR;
 
 
 public class PacketManager implements Runnable
 {
-
-	private final HelloTable helloTable = new HelloTable();
+	private final MPR mpr = new MPR();
+	private final HelloTable helloTable = new HelloTable(mpr);
 	private final ReentrantLock netlock = new ReentrantLock();
 	private final LSATable lsaTable = new LSATable(netlock);
 	private DatagramSocket socket;
@@ -111,24 +112,23 @@ public class PacketManager implements Runnable
 					/*
 					 * Debugging
 					 */
-
-					if (!IP.myIP().equals(new IP(packet.getAddress()))) {
+					IP senderIP = new IP(packet.getAddress());
+					if (!IP.myIP().equals(senderIP)) {
 						System.out.println(
 								"[PacketManager] Packet received from "
-										+packet.getAddress().getHostAddress());
+										+senderIP);
 						numberOfPackets++;
 						buffer = ByteBuffer.allocate(
 								packet.getData().length);
 						buffer.put(packet.getData());
 						buffer.flip(); // consult mode
-						//Depends on the encoding !!
 						if (buffer.array()[0]==MessageThread.lsaType
-								&& lsaTable.isLatest(
-										new IP(packet.getAddress()), 
+								&& lsaTable.isLatest(senderIP, 
 										buffer)) {
 							System.out.println(
 									"[PacketManager] LSA forwarded.");
-							safeSend(socket, packet);
+							if (mpr.MPROf(senderIP))
+								safeSend(socket, packet);
 						}
 						queue.add(buffer);
 					}
@@ -173,7 +173,6 @@ public class PacketManager implements Runnable
 			try {
 				socket.send(packet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -201,6 +200,9 @@ public class PacketManager implements Runnable
 			 * in the following pattern :
 			 * H - full period - H - half period - LSA - half period - 
 			 * that is one hell per period and one LSA every two periods
+			 * At the end of the loop, a check is performed to see which
+			 * neighbors stopped sending hellos and are thus considered 
+			 * disconnected from the network.
 			 */
 			while (true) {
 				hello = helloTable.createHello();
