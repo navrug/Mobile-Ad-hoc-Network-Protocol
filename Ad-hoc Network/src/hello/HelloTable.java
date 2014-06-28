@@ -3,6 +3,7 @@ package hello;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
 import utilities.IP;
@@ -83,15 +84,18 @@ public class HelloTable
 	{
 		boolean result = false;
 		long currentTime = System.currentTimeMillis()-creationTime;
+		LinkedList<IP> toRemove = new LinkedList<IP>();
 		lock.lock();
 		try {
-
 			for (IP neighbor : arrivalTime.keySet())
 				if (currentTime - arrivalTime.get(neighbor) > 5000) {
-					table.remove(neighbor);
-					arrivalTime.remove(neighbor);
+					toRemove.add(neighbor);
 					result = true;
 				}
+			for (IP neighbor : toRemove) {
+				table.remove(neighbor);
+				arrivalTime.remove(neighbor);
+			}
 		}
 		finally {
 			lock.unlock();
