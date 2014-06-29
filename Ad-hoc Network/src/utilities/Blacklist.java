@@ -1,6 +1,5 @@
+package utilities;
 import java.util.ArrayList;
-
-import utilities.IP;
 
 
 public class Blacklist {

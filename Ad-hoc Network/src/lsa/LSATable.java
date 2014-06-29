@@ -1,6 +1,5 @@
 package lsa;
 
-
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;

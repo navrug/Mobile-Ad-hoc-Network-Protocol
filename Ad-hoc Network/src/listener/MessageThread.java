@@ -3,8 +3,6 @@ package listener;
 import hello.HelloMessage;
 import hello.HelloTable;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 

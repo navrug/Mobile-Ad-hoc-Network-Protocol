@@ -1,7 +1,5 @@
 package hello;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
