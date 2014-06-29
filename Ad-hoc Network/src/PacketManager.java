@@ -66,11 +66,11 @@ public class PacketManager implements Runnable
 		}
 		try {
 
-//			NetworkInterface nif = NetworkInterface.getByName(IP.myIface());
-//			Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();		
+			//			NetworkInterface nif = NetworkInterface.getByName(IP.myIface());
+			//			Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();		
 
 			socket = new DatagramSocket(1234,
-					InetAddress.getByName(IP.myIP().toString()));
+					InetAddress.getByName("0.0.0.0"));
 			socket.setBroadcast(true);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -115,24 +115,32 @@ public class PacketManager implements Runnable
 				finally {
 					netlock.unlock();
 				}
+
+				buffer = ByteBuffer.allocate(
+						packet.getData().length);
+				buffer.put(packet.getData());
+				buffer.flip(); // consult mode
+
+				byte[] byteAddress = new byte[4];
+				//Getting source address
+				for (int j = 0; j<4; j++) {
+					byteAddress[j] = buffer.array()[j+4];
+				}
+
+				IP senderIP = new IP(byteAddress);
 				/*
 				 * Debugging
 				 */
-				IP senderIP = new IP(packet.getAddress());
-				if (!blacklist.contains(senderIP)) {
+				if (!blacklist.contains(new IP(packet.getAddress()))) {
 					/*
 					 * Debugging
+					 * 
 					 */
-
 					if (!IP.myIP().equals(senderIP)) {
 						System.out.println(
 								"[PacketManager] Packet received from "
 										+senderIP);
 						numberOfPackets++;
-						buffer = ByteBuffer.allocate(
-								packet.getData().length);
-						buffer.put(packet.getData());
-						buffer.flip(); // consult mode
 						if (buffer.array()[0]==MessageThread.lsaType
 								&& lsaTable.isLatest(buffer)) {
 							System.out.println(
