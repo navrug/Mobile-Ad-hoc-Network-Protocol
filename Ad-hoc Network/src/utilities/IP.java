@@ -40,6 +40,8 @@ public class IP {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
+		
+		IP.myIface=properties.getProperty("Interface", "wlan0");
 	}
 	
 	public static void defineIP() {
