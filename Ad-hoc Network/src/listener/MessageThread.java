@@ -53,6 +53,7 @@ public class MessageThread implements Runnable
 				byteAddress[j] = message.get();
 			}
 			IP sourceAddress = new IP(byteAddress);
+			message.position(0);
 			switch (type) {
 			case helloType:
 				HelloMessage hello = new HelloMessage(message);
