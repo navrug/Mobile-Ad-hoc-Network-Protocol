@@ -61,6 +61,7 @@ public class PacketManager implements Runnable
 			SystemCommand.cmdExec("ip route flush dev " + IP.myIface());
 			SystemCommand.cmdExec("ifconfig " + IP.myIface() + " " + IP.myIP() + " netmask 255.255.0.0 broadcast 1.1.255.255");
 			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/16 dev " + IP.myIface() + " brd +");
+			SystemCommand.cmdExec("ip route add to 1.1.0.0/16 dev " + IP.myIface());
 			SystemCommand.cmdExec("ip route add to default via " + IP.myDefaultRoute());
 			SystemCommand.cmdExec("ip route add to 255.255.255.255 dev " + IP.myIface());
 		} finally {
