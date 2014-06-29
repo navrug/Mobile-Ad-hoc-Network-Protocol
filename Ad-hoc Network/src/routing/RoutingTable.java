@@ -20,16 +20,16 @@ public class RoutingTable implements IDrawable
 	private Hashtable<IP, IP> table;
 	/*private*/ public NetworkGraph graph;
 	Printer printer;
-	private final ReentrantLock lock;
+	private final ReentrantLock netlock;
 
 	public RoutingTable(ReentrantLock lock)
 	{
-		this.lock=lock;
+		this.netlock=lock;
 	}
 
 	public void writeTable()
 	{
-		lock.lock();
+		netlock.lock();
 		try {
 
 			System.out.println("[RountingThread] Reconfiguration ip");
@@ -43,7 +43,7 @@ public class RoutingTable implements IDrawable
 			}
 		}
 		finally {
-			lock.unlock();
+			netlock.unlock();
 		}
 	}
 
