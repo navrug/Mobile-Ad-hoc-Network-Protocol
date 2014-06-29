@@ -54,10 +54,10 @@ public class RoutingTable implements IDrawable
 		table = new Hashtable<IP, IP>();
 		HashSet<IP> inserted = new HashSet<IP>();
 		LinkedList<IP> queue = new LinkedList<IP>();
-		
+
 		if(!graph.contains(IP.myDefaultRoute())) 
 			IP.defineDefaultRoute(IP.myIP());
-		
+
 		inserted.add(IP.myIP());
 		addNeighbors(IP.myIP(),
 				inserted,
@@ -69,7 +69,7 @@ public class RoutingTable implements IDrawable
 			addNeighbors(ip,
 					inserted,
 					queue);
-			}
+		}
 		if (printer == null)
 			printer = new Printer(this, true);
 		printer.refresh();
@@ -99,7 +99,7 @@ public class RoutingTable implements IDrawable
 	{
 		return FormDrawable.headerHeight
 				+ FormDrawable.doubleToCoord(0.5
-						+0.4*Math.sin(rank*2*3.1415/(double)n));
+						+0.35*Math.sin(rank*2*3.1415/(double)n));
 	}
 	private void drawLine(Graphics g, int a, int b, int n) {
 		g.drawLine(xCircleCoord(a, n),
@@ -109,11 +109,22 @@ public class RoutingTable implements IDrawable
 	}
 	private void drawNode(Graphics g, IP ip, int a, int n)
 	{
-		g.fillOval(xCircleCoord(a, n)-4,
-				yCircleCoord(a, n)-4,9,9);
-		g.drawString(ip.toString(),
-				xCircleCoord(a, n)-4,
-				yCircleCoord(a, n)-4);
+		if (graph.isInternetProvider(ip)) {
+			g.setColor(Color.GREEN);
+			g.fillOval(xCircleCoord(a, n)-4,
+					yCircleCoord(a, n)-4,9,9);
+			g.drawString(ip.toString(),
+					xCircleCoord(a, n)-4,
+					yCircleCoord(a, n)-4);
+			g.setColor(Color.BLACK);
+		}
+		else {
+			g.fillOval(xCircleCoord(a, n)-4,
+					yCircleCoord(a, n)-4,9,9);
+			g.drawString(ip.toString(),
+					xCircleCoord(a, n)-4,
+					yCircleCoord(a, n)-4);
+		}
 	}
 
 	@Override
@@ -143,8 +154,8 @@ public class RoutingTable implements IDrawable
 			drawLine(g, ranks.get(a), ranks.get(IP.myIP()), n);
 		for (IP a : table.keySet())
 			drawLine(g, ranks.get(a), ranks.get(table.get(a)), n);
-		
-		g.setColor(Color.WHITE);
+
+		g.setColor(Color.BLACK);
 		//Drawing the nodes
 		drawNode(g, IP.myIP(), ranks.get(IP.myIP()), n);
 		for (IP a : graph.neighbors(IP.myIP()))
@@ -154,8 +165,8 @@ public class RoutingTable implements IDrawable
 		//Drawing the header
 		g.drawString(
 				"Graphic representation of the routing table of "
-				+IP.myIP()
-				,20,20);
+						+IP.myIP()
+						,20,20);
 		g.drawString("Red edges are routes,"
 				+" white are unused connections",20,40);
 		g.setColor(c);
