@@ -51,12 +51,12 @@ public class PacketManager implements Runnable
 		IP.defineIP();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
-			
+
 			NetworkInterface nif = NetworkInterface.getByName(IP.myIface());
 			Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();		
-			
+
 			socket = new DatagramSocket(1234,
-					nifAddresses.nextElement());
+					InetAddress.getByName(IP.myIP().toString()));
 			socket.setBroadcast(true);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -80,7 +80,7 @@ public class PacketManager implements Runnable
 
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
-	{
+			{
 		long ti = System.currentTimeMillis();
 		long t = ti;
 		/*
@@ -173,17 +173,15 @@ public class PacketManager implements Runnable
 				"[PacketManager] Received "
 						+numberOfPackets
 						+" packets in "+timeout+" ms.");
-	}
+			}
 
 	private void safeSend(DatagramSocket socket, DatagramPacket packet)
 	{
 		netlock.lock();
 		try {
-			try {
-				socket.send(packet);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		finally {
 			netlock.unlock();
