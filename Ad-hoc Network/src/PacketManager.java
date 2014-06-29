@@ -68,10 +68,6 @@ public class PacketManager implements Runnable
 			netlock.unlock();
 		}
 		try {
-
-			//			NetworkInterface nif = NetworkInterface.getByName(IP.myIface());
-			//			Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();		
-
 			socket = new DatagramSocket(1234,
 					InetAddress.getByName("0.0.0.0"));
 			socket.setBroadcast(true);

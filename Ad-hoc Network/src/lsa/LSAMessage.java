@@ -82,6 +82,11 @@ public class LSAMessage
 				(numberOfNeighbors*4 + 12)+" bytes");
 		System.out.print("#  ");
 		System.out.println("From : "+sourceAddress);
+		if(IP.myIP().isInternetProvider()) {
+			System.out.print(" is internet pro.");
+		}
+		
+		
 		System.out.print("#  ");
 		System.out.print("Sequence number : "+sequenceNumber);
 		System.out.print("        ");
