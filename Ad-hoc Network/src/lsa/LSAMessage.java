@@ -83,7 +83,7 @@ public class LSAMessage
 		System.out.print("#  ");
 		System.out.print("From : "+sourceAddress);
 		if(sourceAddress.isInternetProvider()) 
-			System.out.println(" is internet pro.");
+			System.out.println(" is internet provider");
 		else System.out.println();
 		
 		
