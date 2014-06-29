@@ -10,6 +10,7 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Enumeration;
 import java.util.Random;
@@ -152,7 +153,7 @@ public class PacketManager implements Runnable
 					else
 						System.out.println(
 								"[PacketManager] Received from own address : "
-										+ IP.myIP());
+										+ packet.getAddress().getHostAddress());
 					/*
 					 * Debugging
 					 */
