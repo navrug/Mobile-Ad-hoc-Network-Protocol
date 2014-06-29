@@ -81,9 +81,9 @@ public class LSAMessage
 		System.out.println("Size : "+
 				(numberOfNeighbors*4 + 12)+" bytes");
 		System.out.print("#  ");
-		System.out.println("From : "+sourceAddress);
-		if(IP.myIP().isInternetProvider()) {
-			System.out.print(" is internet pro.");
+		System.out.print("From : "+sourceAddress);
+		if(sourceAddress.isInternetProvider()) {
+			System.out.println(" is internet pro.");
 		}
 		
 		
