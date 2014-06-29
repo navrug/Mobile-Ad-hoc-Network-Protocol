@@ -45,9 +45,6 @@ public class PacketManager implements Runnable
 	private PacketManager()
 	{
 		IP.defineIP();
-		
-		System.out.println(IP.myDefaultRoute());
-		//IP.defineIPFromHost();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
 			socket = new DatagramSocket(1234,
