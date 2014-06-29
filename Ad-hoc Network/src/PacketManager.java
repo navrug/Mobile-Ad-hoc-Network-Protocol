@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Enumeration;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,8 +51,12 @@ public class PacketManager implements Runnable
 		IP.defineIP();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
+			
+			NetworkInterface nif = NetworkInterface.getByName(IP.myIface());
+			Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();		
+			
 			socket = new DatagramSocket(1234,
-					InetAddress.getByName("0.0.0.0"));
+					nifAddresses.nextElement());
 			socket.setBroadcast(true);
 		} catch (IOException e) {
 			e.printStackTrace();

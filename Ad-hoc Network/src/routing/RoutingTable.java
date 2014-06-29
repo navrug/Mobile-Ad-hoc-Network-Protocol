@@ -65,7 +65,7 @@ public class RoutingTable implements IDrawable
 			IP ip = queue.remove();
 			if(IP.myDefaultRoute().equals(IP.myIP())&&ip.isInternetProvider()) 
 				IP.defineDefaultRoute(ip);
-			addNeighbors(queue.remove(),
+			addNeighbors(ip,
 					inserted,
 					queue);
 			}
