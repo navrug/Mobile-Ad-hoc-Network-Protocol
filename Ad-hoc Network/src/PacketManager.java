@@ -240,6 +240,7 @@ public class PacketManager implements Runnable
 				listen(listenData, helloPeriod/2 
 						+ r.nextInt(2*deviationRange)-deviationRange);
 				helloTable.checkDeadNodes();
+				lsaTable.checkDeadNodes();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

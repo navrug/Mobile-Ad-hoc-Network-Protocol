@@ -4,6 +4,7 @@ package lsa;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,6 +15,8 @@ import utilities.IP;
 public class LSATable{
 	private final Hashtable<IP, LSAMessage> table = new Hashtable<IP, LSAMessage>();
 	private final RoutingTable routingTable;
+	private final long creationTime = System.currentTimeMillis();
+	private final Hashtable<IP, Long> arrivalTime = new Hashtable<IP, Long>();
 	private ReentrantLock lock = new ReentrantLock(); 
 
 	public LSATable(ReentrantLock netLock)
@@ -34,6 +37,8 @@ public class LSATable{
 			if (oldMessage == null || 
 					oldMessage.sequenceNumber() < message.sequenceNumber()) {
 				table.put(neighbor, message);
+				arrivalTime.put(neighbor, 
+						System.currentTimeMillis()-creationTime);
 				if (!message.equals(oldMessage)) {
 					routingTable.updateGraph(this);
 					routingTable.writeTable();
@@ -110,5 +115,28 @@ public class LSATable{
 		finally {
 			lock.unlock();
 		}
+	}
+	
+	public boolean checkDeadNodes()
+	{
+		boolean result = false;
+		long currentTime = System.currentTimeMillis()-creationTime;
+		LinkedList<IP> toRemove = new LinkedList<IP>();
+		lock.lock();
+		try {
+			for (IP neighbor : arrivalTime.keySet())
+				if (currentTime - arrivalTime.get(neighbor) > 20000) {
+					toRemove.add(neighbor);
+					result = true;
+				}
+			for (IP neighbor : toRemove) {
+				table.remove(neighbor);
+				arrivalTime.remove(neighbor);
+			}
+		}
+		finally {
+			lock.unlock();
+		}
+		return result;	
 	}
 }
