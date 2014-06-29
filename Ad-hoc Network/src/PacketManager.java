@@ -50,17 +50,6 @@ public class PacketManager implements Runnable
 	{
 		IP.defineIP();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
-		try {
-
-			NetworkInterface nif = NetworkInterface.getByName(IP.myIface());
-			Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();		
-
-			socket = new DatagramSocket(1234,
-					InetAddress.getByName(IP.myIP().toString()));
-			socket.setBroadcast(true);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		netlock.lock();
 		try {
 			System.out.println("[PacketManager] Attribution d'un adresse ip");
@@ -74,6 +63,17 @@ public class PacketManager implements Runnable
 			SystemCommand.cmdExec("ip route add to default via " + IP.myDefaultRoute());
 		} finally {
 			netlock.unlock();
+		}
+		try {
+
+//			NetworkInterface nif = NetworkInterface.getByName(IP.myIface());
+//			Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();		
+
+			socket = new DatagramSocket(1234,
+					InetAddress.getByName(IP.myIP().toString()));
+			socket.setBroadcast(true);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
