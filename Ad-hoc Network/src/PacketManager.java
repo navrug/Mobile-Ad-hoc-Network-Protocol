@@ -5,9 +5,14 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.Enumeration;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,9 +49,24 @@ public class PacketManager implements Runnable
 
 	private PacketManager()
 	{
-		//IP.defineIP();
-		IP.defineIPFromHost();
+		IP.defineIP();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
+		netlock.lock();
+		try {
+			System.out.println("[PacketManager] Attribution d'un adresse ip");
+			SystemCommand.cmdExec("echo 1 > /proc/sys/net/ipv4/ip_forward");
+			SystemCommand.cmdExec("ifconfig " + IP.myIface() + " down");
+			SystemCommand.cmdExec("ifconfig " + IP.myIface() + " up");
+			SystemCommand.cmdExec("ip addr flush dev " + IP.myIface());
+			SystemCommand.cmdExec("ip route flush dev " + IP.myIface());
+			SystemCommand.cmdExec("ifconfig " + IP.myIface() + " " + IP.myIP() + " netmask 255.255.0.0 broadcast 1.1.255.255");
+			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/16 dev " + IP.myIface() + " brd +");
+			SystemCommand.cmdExec("ip route add to 1.1.0.0/16 dev " + IP.myIface());
+			SystemCommand.cmdExec("ip route add to default via " + IP.myDefaultRoute());
+			SystemCommand.cmdExec("ip route add to 255.255.255.255 dev " + IP.myIface());
+		} finally {
+			netlock.unlock();
+		}
 		try {
 			socket = new DatagramSocket(1234,
 					InetAddress.getByName("0.0.0.0"));
@@ -54,24 +74,12 @@ public class PacketManager implements Runnable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		netlock.lock();
-		try {
-			System.out.println("[PacketManager] Attribution d'un adresse ip");
-			SystemCommand.cmdExec("echo 1 > /proc/sys/net/ipv4/ip_forward");
-			
-			SystemCommand.cmdExec("ip addr flush dev " + "eth0");
-			SystemCommand.cmdExec("ip route flush dev " + "eth0");
-			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + "eth0" + " brd +");
-			SystemCommand.cmdExec("ip route add default dev eth0");
-		} finally {
-			netlock.unlock();
-		}
 	}
 
 
 	private void listen(byte[] listeningBuffer, int timeout) 
 			throws IOException
-	{
+			{
 		long ti = System.currentTimeMillis();
 		long t = ti;
 		/*
@@ -106,24 +114,32 @@ public class PacketManager implements Runnable
 				finally {
 					netlock.unlock();
 				}
+
+				buffer = ByteBuffer.allocate(
+						packet.getData().length);
+				buffer.put(packet.getData());
+				buffer.flip(); // consult mode
+
+				byte[] byteAddress = new byte[4];
+				//Getting source address
+				for (int j = 0; j<4; j++) {
+					byteAddress[j] = buffer.array()[j+4];
+				}
+
+				IP senderIP = new IP(byteAddress);
 				/*
 				 * Debugging
 				 */
-				IP senderIP = new IP(packet.getAddress());
-				if (!blacklist.contains(senderIP)) {
+				if (!blacklist.contains(new IP(packet.getAddress()))) {
 					/*
 					 * Debugging
+					 * 
 					 */
-
 					if (!IP.myIP().equals(senderIP)) {
 						System.out.println(
 								"[PacketManager] Packet received from "
 										+senderIP);
 						numberOfPackets++;
-						buffer = ByteBuffer.allocate(
-								packet.getData().length);
-						buffer.put(packet.getData());
-						buffer.flip(); // consult mode
 						if (buffer.array()[0]==MessageThread.lsaType
 								&& lsaTable.isLatest(buffer)) {
 							System.out.println(
@@ -135,7 +151,7 @@ public class PacketManager implements Runnable
 					else
 						System.out.println(
 								"[PacketManager] Received from own address : "
-										+ IP.myIP());
+										+ packet.getAddress().getHostAddress());
 					/*
 					 * Debugging
 					 */
@@ -164,17 +180,15 @@ public class PacketManager implements Runnable
 				"[PacketManager] Received "
 						+numberOfPackets
 						+" packets in "+timeout+" ms.");
-	}
+			}
 
 	private void safeSend(DatagramSocket socket, DatagramPacket packet)
 	{
 		netlock.lock();
 		try {
-			try {
-				socket.send(packet);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		finally {
 			netlock.unlock();

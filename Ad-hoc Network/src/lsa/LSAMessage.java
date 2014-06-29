@@ -23,7 +23,7 @@ public class LSAMessage
 		byte type = message.get();
 		if (type != MessageThread.lsaType)
 			throw new WrongMessageType();
-		message.get();
+		boolean isInternetProvider=(message.get()==1);
 		message.get();
 		message.get();
 		byte[] byteAddress = new byte[4];
@@ -32,6 +32,7 @@ public class LSAMessage
 			byteAddress[j] = message.get();
 		}
 		sourceAddress = new IP(byteAddress);
+		sourceAddress.setInternetProvider(isInternetProvider);
 		sequenceNumber = message.getShort();
 		numberOfNeighbors = message.getShort();
 		neighborsAddresses = new LinkedList<IP>();
@@ -80,7 +81,12 @@ public class LSAMessage
 		System.out.println("Size : "+
 				(numberOfNeighbors*4 + 12)+" bytes");
 		System.out.print("#  ");
-		System.out.println("From : "+sourceAddress);
+		System.out.print("From : "+sourceAddress);
+		if(sourceAddress.isInternetProvider()) 
+			System.out.println(" is internet provider");
+		else System.out.println();
+		
+		
 		System.out.print("#  ");
 		System.out.print("Sequence number : "+sequenceNumber);
 		System.out.print("        ");
@@ -102,7 +108,8 @@ public class LSAMessage
 		short messageSize = (short) (numberOfNeighbors*4 + 12);
 		ByteBuffer buffer = ByteBuffer.allocate(messageSize);
 		buffer.put(MessageThread.lsaType);
-		buffer.put((byte)0);
+		if(sourceAddress.isInternetProvider()) buffer.put((byte)1);
+		else buffer.put((byte)0);
 		buffer.putShort(messageSize);
 		buffer.put(sourceAddress.toBytes());
 		buffer.putShort(sequenceNumber);
@@ -144,6 +151,4 @@ public class LSAMessage
 	{
 		return sourceAddress;
 	}
-
-
 }

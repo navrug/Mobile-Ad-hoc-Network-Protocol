@@ -29,20 +29,6 @@ public class MessageThread implements Runnable
 		this.queue = queue;
 	}
 
-	/*
-	 * Takes a ByteBuffer in consult mode, return a buffer in
-	 * consult mode
-	 */
-	private static ByteBuffer adaptBuffer(ByteBuffer original)
-	{
-		original.position(0);
-		ByteBuffer clone = ByteBuffer.allocate(original.limit());
-		for (int pos = 0; pos < original.limit(); pos++)
-			clone.put(original.get());
-		clone.flip();
-		return clone;
-	}
-
 	@Override
 	public void run()
 	{
@@ -67,14 +53,15 @@ public class MessageThread implements Runnable
 				byteAddress[j] = message.get();
 			}
 			IP sourceAddress = new IP(byteAddress);
+			message.position(0);
 			switch (type) {
 			case helloType:
-				HelloMessage hello = new HelloMessage(adaptBuffer(message));
+				HelloMessage hello = new HelloMessage(message);
 				hello.display();
 				helloTable.addHello(sourceAddress, hello);
 				break;
 			case lsaType:
-				LSAMessage lsa = new LSAMessage(adaptBuffer(message));
+				LSAMessage lsa = new LSAMessage(message);
 				lsa.display();
 				lsaTable.addLSA(sourceAddress, lsa);
 				break;

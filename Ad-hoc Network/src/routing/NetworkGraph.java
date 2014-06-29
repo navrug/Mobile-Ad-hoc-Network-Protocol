@@ -17,15 +17,18 @@ import lsa.LSATable;
 public class NetworkGraph implements IDrawable
 {
 	/*private*/ public final Hashtable<IP, HashSet<IP>> graph;
+	private final HashSet<IP> internetProviders; 
 	
 	public NetworkGraph()
 	{
 		graph = new Hashtable<IP, HashSet<IP>>();
+		internetProviders = new HashSet<IP>();
 	}
 	
 	NetworkGraph(LSATable table)
 	{
 		graph = new Hashtable<IP, HashSet<IP>>();
+		internetProviders = table.getInternetProviders();
 		for (LSAMessage message : table.messages()) {
 			for (IP neighbor : message.neighbors())
 				if (table.isConnectedTo(neighbor, message.source()))
@@ -53,7 +56,16 @@ public class NetworkGraph implements IDrawable
 	{
 		return graph.keySet();
 	}
-
+	
+	public boolean contains(IP ip)
+	{
+		return graph.containsKey(ip) ;
+	}
+	
+	public boolean isInternetProvider(IP ip) {
+		return internetProviders.contains(ip);
+	}
+	
 	//GRAPHICS 
 
 	private int xCircleCoord(int rank, int n, int k)

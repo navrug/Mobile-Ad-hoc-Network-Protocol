@@ -1,19 +1,51 @@
 package utilities;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Properties;
 import java.util.Random;
 
 
 public class IP {
 	private final byte[] bytes = new byte[4];
+	private boolean isInternetProvider=false;
 	private static IP myIP;
-	private static IP myIface;
+	private static IP myDefaultRoute;
+	private static String myIface;
 
-	public static IP defineIP()
+	public static void defineIP(String configPath)
 	{
+		 Properties properties=new Properties();
+		 try {
+		 FileInputStream in =new FileInputStream(configPath);
+		 properties.load(in);
+		 in.close();
+		 } catch (IOException e) {
+		 System.out.println("Unable to load config file.");
+		 }
+		
 		Random r = new Random(System.currentTimeMillis());
-		myIP = new IP(1, 1, r.nextInt(), r.nextInt());
-		return myIP;
+		IP.myIP = new IP(1, 1, r.nextInt(), r.nextInt());
+		String myIPAlea = IP.myIP.toString();
+		try {
+			IP.myIP = new IP(InetAddress.getByName(properties.getProperty("IP", myIPAlea)));
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		IP.myIP.isInternetProvider=(properties.getProperty("IsInternetProvider", "0")!="0");
+		try {
+			IP.myDefaultRoute = new IP(InetAddress.getByName(properties.getProperty("DefaultRoute", IP.myIP.toString())));
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		IP.myIface=properties.getProperty("Interface", "wlan0");
+	}
+	
+	public static void defineIP() {
+		defineIP("config.ini");
 	}
 	
 	public static IP defineIPFromHost()
@@ -26,16 +58,42 @@ public class IP {
 		return myIP;
 	}
 	
+	public static IP defineDefaultRoute()
+	{
+		myDefaultRoute = myIP;
+		return myIP;
+	}
+	
+	public static IP defineDefaultRoute(IP defaultRoute)
+	{
+		myDefaultRoute = defaultRoute;
+		return myDefaultRoute;
+	}
+	
 	public static IP myIP()
 	{
 		return myIP;
 	}
 	
-	public static IP myIface()
+	public static IP myDefaultRoute()
+	{
+		return myDefaultRoute;
+	}
+	
+	public boolean isInternetProvider()
+	{
+		return isInternetProvider;
+	}
+	
+	public static String myIface()
 	{
 		return myIface;
 	}
 	
+	public void setInternetProvider(boolean isInternetProvider) {
+		this.isInternetProvider = isInternetProvider;
+	}
+
 	public IP(byte[] bytes)
 	{
 		if (bytes.length != 4)

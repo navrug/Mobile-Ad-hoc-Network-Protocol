@@ -3,6 +3,7 @@ package lsa;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Set;
@@ -17,6 +18,7 @@ public class LSATable{
 	private final RoutingTable routingTable;
 	private final long creationTime = System.currentTimeMillis();
 	private final Hashtable<IP, Long> arrivalTime = new Hashtable<IP, Long>();
+	private final HashSet<IP> internetProviders = new HashSet<IP>(); 
 	private ReentrantLock lock = new ReentrantLock(); 
 
 	public LSATable(ReentrantLock netLock)
@@ -39,6 +41,8 @@ public class LSATable{
 				table.put(neighbor, message);
 				arrivalTime.put(neighbor, 
 						System.currentTimeMillis()-creationTime);
+				if (message.source().isInternetProvider())
+					internetProviders.add(message.source());
 				if (!message.equals(oldMessage)) {
 					routingTable.updateGraph(this);
 					routingTable.writeTable();
@@ -138,5 +142,10 @@ public class LSATable{
 			lock.unlock();
 		}
 		return result;	
+	}
+
+	public HashSet<IP> getInternetProviders()
+	{
+		return internetProviders;
 	}
 }
