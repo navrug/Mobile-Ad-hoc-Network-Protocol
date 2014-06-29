@@ -37,7 +37,7 @@ public class RoutingTable implements IDrawable
 			SystemCommand.cmdExec("ip route flush dev " + IP.myIface());
 			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + IP.myIface() + " brd +");
 			
-			SystemCommand.cmdExec("ip route add default to " + IP.myDefaultRoute());
+			SystemCommand.cmdExec("ip route add to default via " + IP.myDefaultRoute());
 			
 			for (IP m : table.keySet()) {
 				SystemCommand.cmdExec("ip route add to " + m + "/32 via " + table.get(m));
@@ -51,12 +51,15 @@ public class RoutingTable implements IDrawable
 
 	public void updateGraph(LSATable lsaTable)
 	{
-		if(!graph.contains(IP.myDefaultRoute())) 
-				IP.defineDefaultRoute(IP.myIP());
+
 		graph = new NetworkGraph(lsaTable);
 		table = new Hashtable<IP, IP>();
 		HashSet<IP> inserted = new HashSet<IP>();
 		LinkedList<IP> queue = new LinkedList<IP>();
+		
+		if(!graph.contains(IP.myDefaultRoute())) 
+			IP.defineDefaultRoute(IP.myIP());
+		
 		inserted.add(IP.myIP());
 		addNeighbors(IP.myIP(),
 				inserted,

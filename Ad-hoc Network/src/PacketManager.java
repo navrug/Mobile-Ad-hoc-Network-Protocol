@@ -44,8 +44,10 @@ public class PacketManager implements Runnable
 
 	private PacketManager()
 	{
-		//IP.defineIP();
-		IP.defineIPFromHost();
+		IP.defineIP();
+		
+		System.out.println(IP.myDefaultRoute());
+		//IP.defineIPFromHost();
 		queue = new LinkedBlockingQueue<ByteBuffer>();
 		try {
 			socket = new DatagramSocket(1234,
@@ -58,11 +60,13 @@ public class PacketManager implements Runnable
 		try {
 			System.out.println("[PacketManager] Attribution d'un adresse ip");
 			SystemCommand.cmdExec("echo 1 > /proc/sys/net/ipv4/ip_forward");
+			SystemCommand.cmdExec("ifconfig " + IP.myIface() + " down");
 			SystemCommand.cmdExec("ifconfig " + IP.myIface() + " " + IP.myIP() + " netmask 255.255.0.0 broadcast 1.1.255.255");
+			SystemCommand.cmdExec("ifconfig " + IP.myIface() + " up");
 			SystemCommand.cmdExec("ip addr flush dev " + IP.myIface());
 			SystemCommand.cmdExec("ip route flush dev " + IP.myIface());
 			SystemCommand.cmdExec("ip addr add " + IP.myIP() + "/32 dev " + IP.myIface() + " brd +");
-			SystemCommand.cmdExec("ip route add default dev " + IP.myIface());
+			SystemCommand.cmdExec("ip route add to default via " + IP.myDefaultRoute());
 		} finally {
 			netlock.unlock();
 		}

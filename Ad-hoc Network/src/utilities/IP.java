@@ -26,25 +26,24 @@ public class IP {
 		 }
 		
 		Random r = new Random(System.currentTimeMillis());
-		myIP = new IP(1, 1, r.nextInt(), r.nextInt());
-		String myIPAlea = myIP.toString();
+		IP.myIP = new IP(1, 1, r.nextInt(), r.nextInt());
+		String myIPAlea = IP.myIP.toString();
 		try {
-			myIP = new IP(InetAddress.getByName(properties.getProperty("IP", myIPAlea)));
+			IP.myIP = new IP(InetAddress.getByName(properties.getProperty("IP", myIPAlea)));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 		
-		
-		myIP.isInternetProvider=(properties.getProperty("IsInternetProvider", "0")!="0");
+		IP.myIP.isInternetProvider=(properties.getProperty("IsInternetProvider", "0")!="0");
 		try {
-			myIP = new IP(InetAddress.getByName(properties.getProperty("DefaultRoute", myIPAlea)));
+			IP.myDefaultRoute = new IP(InetAddress.getByName(properties.getProperty("DefaultRoute", IP.myIP.toString())));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public static void defineIP() {
-		defineIP("config");
+		defineIP("config.ini");
 	}
 	
 	public static IP defineIPFromHost()
